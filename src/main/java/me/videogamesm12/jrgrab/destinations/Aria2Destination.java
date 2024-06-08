@@ -25,14 +25,10 @@ public class Aria2Destination extends AbstractDestination
     @Override
     public void sendVersions(List<RBXVersion> versions, String channel)
     {
-        versions.parallelStream().forEach(version ->
-        {
-            version.verifyAvailability(getConfig());
-            version.fetchFiles(getConfig());
-        });
+        versions.parallelStream().forEach(version -> version.fetchFiles(getConfig()));
 
         versions.stream().filter(version -> getConfig().isIncludingUnavailable()
-                || version.getAvailable()).toList().parallelStream().forEach(client ->
+                || version.getAvailable()).toList().forEach(client ->
         {
             Main.getLogger().info("Queuing files for download for version {}", client.getVersionHash());
 

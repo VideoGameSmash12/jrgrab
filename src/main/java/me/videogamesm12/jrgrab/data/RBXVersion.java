@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,6 +85,8 @@ public class RBXVersion
                 files.put("RobloxStudio.zip", "");
                 files.put("RobloxStudio.dmg", "");
             }
+
+            verifyAvailability(configuration);
         }
         else
         {
@@ -117,10 +120,13 @@ public class RBXVersion
                         files.put(name, hash);
                     }
                 }
+
+                available = true;
             }
             catch (IOException | InterruptedException ex)
             {
                 Main.getLogger().warn("Failed to get manifest for version {} in channel {}", getVersionHash(), channel, ex);
+                available = false;
             }
         }
     }
@@ -144,11 +150,22 @@ public class RBXVersion
             return null;
         }
 
+        long time;
+
+        try
+        {
+            time = dateFormat.parse(matcher.group(3)).getTime();
+        }
+        catch (NumberFormatException ex)
+        {
+            time = Instant.now().toEpochMilli();
+        }
+
         return builder()
                 .fullVersionString(str)
                 .type(VersionType.find(matcher.group(1), mac))
                 .versionHash(matcher.group(2))
-                .deployDate(dateFormat.parse(matcher.group(3)).getTime())
+                .deployDate(time)
                 .fileVersion(Optional.ofNullable(matcher.group(6)).orElse("0, 0, 0, 0"))
                 .channel(channel)
                 .cjv(cjv)

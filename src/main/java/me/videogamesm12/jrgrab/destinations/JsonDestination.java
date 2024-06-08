@@ -23,11 +23,7 @@ public class JsonDestination extends AbstractDestination
     @Override
     public void sendVersions(List<RBXVersion> versions, String channel)
     {
-        versions.parallelStream().forEach(version ->
-        {
-            version.verifyAvailability(getConfig());
-            version.fetchFiles(getConfig());
-        });
+        versions.parallelStream().forEach(version -> version.fetchFiles(getConfig()));
 
         try
         {

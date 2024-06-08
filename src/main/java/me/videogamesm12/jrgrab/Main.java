@@ -10,7 +10,8 @@ import me.videogamesm12.jrgrab.grabbers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.stream.Stream;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main
 {
@@ -40,7 +41,6 @@ public class Main
         };
 
         grabber.setup();
-        (grabber.isParallelSupported() ? configuration.getChannels().parallelStream() : configuration.getChannels().stream())
-                .forEach(channel -> destination.sendVersions(grabber.getVersions(channel), channel));
+        configuration.getChannels().forEach(channel -> destination.sendVersions(grabber.getVersions(channel), channel));
     }
 }
