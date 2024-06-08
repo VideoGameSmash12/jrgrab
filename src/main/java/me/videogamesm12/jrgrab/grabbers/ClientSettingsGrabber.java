@@ -23,7 +23,7 @@ public class ClientSettingsGrabber extends AbstractGrabber
 
     public ClientSettingsGrabber(JRGConfiguration config)
     {
-        super(config);
+        super(config, true);
     }
 
     @Override
@@ -34,16 +34,17 @@ public class ClientSettingsGrabber extends AbstractGrabber
     @Override
     public List<RBXVersion> getVersions(String channel)
     {
-        return Arrays.stream(RBXVersion.VersionType.values()).filter(type -> getConfig().isMac() == type.isMac()).map(type ->
+        return Arrays.stream(RBXVersion.VersionType.values()).filter(type -> getConfig().isMac() == type.isMac() && !type.isCjv()).map(type ->
         {
             try
             {
                 final JsonObject object = gson.fromJson(HttpUtil.get("https://clientsettings.roblox.com/v2/client-version/" + type.getClientSettingsName()
-                        + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel)), JsonObject.class);
+                        + (channel.equalsIgnoreCase("live") ? "" : "/channel/" + channel)), JsonObject.class);
 
-                if (object.has("errors") || !object.has("version"))
+                if (object.has("errors"))
                 {
-                    Main.getLogger().error("Failed to get client of type {} due to an error on Roblox's behalf", type.name());
+                    Main.getLogger().error("Failed to get client of type {} due to an error on Roblox's behalf - {}", type.name(),
+                            object.get("errors").getAsJsonArray().get(0).getAsJsonObject().getAsJsonPrimitive("message").getAsString());
                     return null;
                 }
 

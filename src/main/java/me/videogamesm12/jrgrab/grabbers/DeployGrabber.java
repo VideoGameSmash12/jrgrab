@@ -16,7 +16,7 @@ public class DeployGrabber extends AbstractGrabber
 {
     public DeployGrabber(JRGConfiguration config)
     {
-        super(config);
+        super(config, true);
     }
 
     @Override

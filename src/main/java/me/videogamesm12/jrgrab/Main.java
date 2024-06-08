@@ -6,11 +6,11 @@ import me.videogamesm12.jrgrab.destinations.AbstractDestination;
 import me.videogamesm12.jrgrab.destinations.Aria2Destination;
 import me.videogamesm12.jrgrab.destinations.DeployHistoryDestination;
 import me.videogamesm12.jrgrab.destinations.JsonDestination;
-import me.videogamesm12.jrgrab.grabbers.AbstractGrabber;
-import me.videogamesm12.jrgrab.grabbers.ClientSettingsGrabber;
-import me.videogamesm12.jrgrab.grabbers.DeployGrabber;
+import me.videogamesm12.jrgrab.grabbers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.stream.Stream;
 
 public class Main
 {
@@ -27,8 +27,10 @@ public class Main
 
         final AbstractGrabber grabber = switch(configuration.getSource())
         {
-            case DEPLOY_HISTORY -> new DeployGrabber(configuration);
             case CLIENT_SETTINGS -> new ClientSettingsGrabber(configuration);
+            case DEPLOY_HISTORY -> new DeployGrabber(configuration);
+            case GITHUB_TRACKER -> new TrackerGitHubGrabber(configuration);
+            case JSON -> new JsonGrabber(configuration);
         };
         final AbstractDestination destination = switch(configuration.getDestination())
         {
@@ -38,6 +40,7 @@ public class Main
         };
 
         grabber.setup();
-        configuration.getChannels().parallelStream().forEach(channel -> destination.sendVersions(grabber.getVersions(channel), channel));
+        (grabber.isParallelSupported() ? configuration.getChannels().parallelStream() : configuration.getChannels().stream())
+                .forEach(channel -> destination.sendVersions(grabber.getVersions(channel), channel));
     }
 }
