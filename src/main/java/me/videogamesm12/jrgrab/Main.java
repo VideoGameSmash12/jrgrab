@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class Main
 {
     @Getter
-    private static final Logger logger = LoggerFactory.getLogger("JRGrab");
+    private static final Logger logger = LoggerFactory.getLogger("jrgrab");
 
     public static void main(String[] args)
     {
