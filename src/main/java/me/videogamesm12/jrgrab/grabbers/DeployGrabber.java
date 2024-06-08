@@ -25,12 +25,12 @@ public class DeployGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions()
+    public List<RBXVersion> getVersions(String channel)
     {
         try
         {
             String[] lines = HttpUtil.get("https://" + getConfig().getDomain() + "/"
-                    + (getConfig().getChannel().equalsIgnoreCase("live") ? "" : "channel/" + getConfig().getChannel().toLowerCase() + "/")
+                    + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel.toLowerCase() + "/")
                     + (getConfig().isMac() ? "mac/" : "")
                     + "DeployHistory.txt").split("\r\n");
 
@@ -38,7 +38,7 @@ public class DeployGrabber extends AbstractGrabber
             {
                 try
                 {
-                    return RBXVersion.fromString(line, getConfig().getChannel(), new ArrayList<>(), getConfig().isMac(), false);
+                    return RBXVersion.fromString(line, channel, new ArrayList<>(), getConfig().isMac(), false);
                 }
                 catch (ParseException e)
                 {

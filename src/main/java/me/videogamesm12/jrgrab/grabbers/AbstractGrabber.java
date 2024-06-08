@@ -15,5 +15,5 @@ public abstract class AbstractGrabber
 
     public abstract void setup();
 
-    public abstract List<RBXVersion> getVersions();
+    public abstract List<RBXVersion> getVersions(String channel);
 }

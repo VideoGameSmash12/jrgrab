@@ -21,7 +21,7 @@ public class JsonDestination extends AbstractDestination
     }
 
     @Override
-    public void sendVersions(List<RBXVersion> versions)
+    public void sendVersions(List<RBXVersion> versions, String channel)
     {
         versions.parallelStream().forEach(version ->
         {
@@ -32,7 +32,7 @@ public class JsonDestination extends AbstractDestination
 
         try
         {
-            FileWriter writer = new FileWriter("versions." + getConfig().getChannel() + (getConfig().isMac() ? ".mac" : "") + ".json");
+            FileWriter writer = new FileWriter("versions." + channel + (getConfig().isMac() ? ".mac" : "") + ".json");
             gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
             writer.close();
         }

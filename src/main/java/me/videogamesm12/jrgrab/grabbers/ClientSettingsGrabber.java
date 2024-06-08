@@ -32,14 +32,14 @@ public class ClientSettingsGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions()
+    public List<RBXVersion> getVersions(String channel)
     {
         return Arrays.stream(RBXVersion.VersionType.values()).filter(type -> getConfig().isMac() == type.isMac()).map(type ->
         {
             try
             {
                 final JsonObject object = gson.fromJson(HttpUtil.get("https://clientsettings.roblox.com/v2/client-version/" + type.getClientSettingsName()
-                        + (getConfig().getChannel().equalsIgnoreCase("live") ? "" : "channel/" + getConfig().getChannel())), JsonObject.class);
+                        + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel)), JsonObject.class);
 
                 if (object.has("errors") || !object.has("version"))
                 {
@@ -54,13 +54,13 @@ public class ClientSettingsGrabber extends AbstractGrabber
                 //  file we can find and extract the last modified header from there to approximate it. If it fails, we
                 //  will just have to wing it since we know the client does exist
                 final HttpResponse<String> meta = HttpUtil.getFull("https://" + getConfig().getDomain() + "/" +
-                        (getConfig().getChannel().equalsIgnoreCase("live") ? "channel/" + getConfig().getChannel() : "")
+                        (channel.equalsIgnoreCase("live") ? "channel/" + channel : "")
                         + (getConfig().isMac() ? "mac/" : "") + hash + "-" + (getConfig().isMac() ?
                         (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudio.zip" : "Roblox.dmg") : "rbxPkgManifest.txt"));
 
                 final long deployDate = meta.statusCode() != 403 ? HttpUtil.getDateFormat().parse(meta.headers().map().get("Last-Modified").toString()).getTime() : Instant.now().toEpochMilli();
 
-                return RBXVersion.fromClientSettings(type, hash, deployDate, version, getConfig().getChannel(), new ArrayList<>(), false);
+                return RBXVersion.fromClientSettings(type, hash, deployDate, version, channel, new ArrayList<>(), false);
             }
             catch (IOException | InterruptedException | ParseException ex)
             {

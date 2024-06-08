@@ -23,7 +23,7 @@ public class Aria2Destination extends AbstractDestination
     }
 
     @Override
-    public void sendVersions(List<RBXVersion> versions)
+    public void sendVersions(List<RBXVersion> versions, String channel)
     {
         versions.parallelStream().forEach(version ->
         {
