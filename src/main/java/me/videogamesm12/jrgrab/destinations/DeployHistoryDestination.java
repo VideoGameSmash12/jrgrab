@@ -17,7 +17,7 @@ public class DeployHistoryDestination extends AbstractDestination
     }
 
     @Override
-    public void sendVersions(List<RBXVersion> versions)
+    public void sendVersions(List<RBXVersion> versions, String channel)
     {
         versions.parallelStream().forEach(version ->
         {
@@ -25,7 +25,7 @@ public class DeployHistoryDestination extends AbstractDestination
             version.verifyAvailability(getConfig());
         });
 
-        File folder = new File(getConfig().getChannel() + (getConfig().isMac() ? "/mac/" : ""));
+        File folder = new File(channel + (getConfig().isMac() ? "/mac/" : ""));
         folder.mkdirs();
 
         try

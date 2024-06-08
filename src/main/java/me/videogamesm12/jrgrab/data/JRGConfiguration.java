@@ -8,6 +8,9 @@ import lombok.Getter;
 import me.videogamesm12.jrgrab.Main;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Builder
 @Getter
@@ -17,7 +20,7 @@ public class JRGConfiguration
     private String domain = "setup.rbxcdn.com";
 
     @Builder.Default
-    private String channel = "live";
+    private List<String> channels = List.of("live");
 
     @Builder.Default
     private boolean mac = false;
@@ -38,7 +41,7 @@ public class JRGConfiguration
         final OptionParser options = new OptionParser();
         options.accepts("help", "Prints this help message.").forHelp();
         options.accepts("domain", "The domain to use when grabbing clients. Unless you're attempting to scrape something like LuoBu, there isn't a need to change this.").withRequiredArg().describedAs("URL");
-        options.accepts("channel", "The channel to grab clients from").withRequiredArg().describedAs("channel name");
+        options.accepts("channel", "The channel to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
         options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs("json or aria2c");
         options.accepts("source", "Where the application will fetch clients from.").withRequiredArg().describedAs("client_settings or deploy_history");
         options.accepts("mac", "Grab Mac clients.");
@@ -65,7 +68,7 @@ public class JRGConfiguration
             JRGConfigurationBuilder configBuilder = builder();
 
             if (set.has("domain")) configBuilder = configBuilder.domain((String) set.valueOf("domain"));
-            if (set.has("channel")) configBuilder = configBuilder.channel((String) set.valueOf("channel"));
+            if (set.has("channel")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channel")).split(",")).toList());
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
             if (set.has("mac")) configBuilder = configBuilder.mac(true);

@@ -13,5 +13,5 @@ public abstract class AbstractDestination
 {
     private final JRGConfiguration config;
 
-    public abstract void sendVersions(List<RBXVersion> version);
+    public abstract void sendVersions(List<RBXVersion> version, String channel);
 }

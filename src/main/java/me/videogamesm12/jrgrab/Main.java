@@ -38,6 +38,6 @@ public class Main
         };
 
         grabber.setup();
-        destination.sendVersions(grabber.getVersions());
+        configuration.getChannels().parallelStream().forEach(channel -> destination.sendVersions(grabber.getVersions(channel), channel));
     }
 }

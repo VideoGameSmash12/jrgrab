@@ -18,7 +18,7 @@ public class UnimplementedGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions()
+    public List<RBXVersion> getVersions(String channel)
     {
         return List.of();
     }
