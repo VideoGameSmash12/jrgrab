@@ -27,7 +27,6 @@ public class Aria2Destination extends AbstractDestination
     {
         versions.parallelStream().forEach(version ->
         {
-            Main.getLogger().info("Getting files for version {}", version.getVersionHash());
             version.verifyAvailability(getConfig());
             version.fetchFiles(getConfig());
         });

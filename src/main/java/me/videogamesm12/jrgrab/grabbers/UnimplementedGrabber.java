@@ -9,7 +9,7 @@ public class UnimplementedGrabber extends AbstractGrabber
 {
     public UnimplementedGrabber(JRGConfiguration config)
     {
-        super(config);
+        super(config, false);
     }
 
     @Override

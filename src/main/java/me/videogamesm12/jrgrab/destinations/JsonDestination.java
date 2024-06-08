@@ -25,7 +25,6 @@ public class JsonDestination extends AbstractDestination
     {
         versions.parallelStream().forEach(version ->
         {
-            Main.getLogger().info("Getting files for version {}", version.getVersionHash());
             version.verifyAvailability(getConfig());
             version.fetchFiles(getConfig());
         });

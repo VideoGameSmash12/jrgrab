@@ -104,7 +104,9 @@ public class JRGConfiguration
     public enum Source
     {
         CLIENT_SETTINGS,
-        DEPLOY_HISTORY;
+        DEPLOY_HISTORY,
+        GITHUB_TRACKER,
+        JSON
     }
 
     public enum Destination

@@ -12,6 +12,7 @@ import java.util.List;
 public abstract class AbstractGrabber
 {
     private final JRGConfiguration config;
+    private final boolean parallelSupported;
 
     public abstract void setup();
 

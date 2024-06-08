@@ -7,7 +7,6 @@ import me.videogamesm12.jrgrab.Main;
 import me.videogamesm12.jrgrab.util.HttpUtil;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,7 +19,6 @@ import java.util.regex.Pattern;
 public class RBXVersion
 {
     private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|Studio|Studio64|Client) (version-[A-Fa-f0-9]{16}) at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file vers?ion: ([0-9]+, ?[0-9]+, ?[0-9]+, ?[0-9]+))?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
-    //private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|Studio|Studio64|Client) (version-[A-Fa-f0-9]{16}) at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file ver(s)?ion: [0-9], [0-9]+, 0, [0-9]+)?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
     private static final DateFormat dateFormat = new SimpleDateFormat("M'/'d'/'yyyy h':'mm':'ss a");
     //--
     private transient final String fullVersionString;
@@ -37,8 +35,15 @@ public class RBXVersion
 
     public void verifyAvailability(JRGConfiguration configuration)
     {
+        // We already know it's available, no need to check again
+        if (available != null && available)
+        {
+            return;
+        }
+
         try
         {
+            Main.getLogger().info("Verifying availability for version {}", getVersionHash());
             available = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
                     + (!channel.equalsIgnoreCase("live") ? "channel/" + channel + "/" : "")
                     + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
@@ -54,6 +59,14 @@ public class RBXVersion
 
     public void fetchFiles(JRGConfiguration configuration)
     {
+        // We already got the files we needed
+        if (!files.isEmpty())
+        {
+            return;
+        }
+
+        Main.getLogger().info("Getting files for version {}", getVersionHash());
+
         /* Mac clients are stored differently compared to Windows clients. Instead of things like content being split up
            into their own ZIP files, everything is stored in a single ZIP file which makes archiving them easier. The
            downside is that there isn't a quick and efficient way to get files and their hashes, so we end up having to
@@ -164,22 +177,31 @@ public class RBXVersion
     @Getter
     public enum VersionType
     {
-        MAC_PLAYER("Client", "MacPlayer", new String[]{"Client", "MacPlayer"}, true),
-        MAC_STUDIO("Studio", "MacStudio", new String[]{"Studio", "MacStudio", "MacStudioCJV"}, true),
-        WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer"}, false),
-        WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "WindowsStudioCJV", "Studio"}, false),
-        WINDOWS_STUDIO_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64", "WindowsStudio64CJV", "Studio64"}, false);
+        MAC_PLAYER("Client", "MacPlayer", new String[]{"Client", "MacPlayer"}, true, false),
+        MAC_STUDIO("Studio", "MacStudio", new String[]{"Studio", "MacStudio"}, true, false),
+        MAC_STUDIO_CJV("Studio", "MacStudio", new String[]{"MacStudioCJV"}, true, false),
+        WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer"}, false,false),
+        WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "Studio"}, false, false),
+        WINDOWS_STUDIO_CJV_X86("Studio", "WindowsStudio", new String[]{"WindowsStudioCJV"}, false, true),
+        WINDOWS_STUDIO_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64", "Studio64"}, false, false),
+        WINDOWS_STUDIO_CJV_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64CJV"}, false, true);
 
         private final String friendlyName;
         private final String clientSettingsName;
         private final String[] acceptableNames;
         private final boolean mac;
+        private final boolean cjv;
 
-        public static VersionType find(String friendlyName, boolean mac)
+        public static VersionType find(String friendlyName, boolean mac, boolean cjv)
         {
             return Arrays.stream(values()).filter(type -> (type.friendlyName.equalsIgnoreCase(friendlyName)
                     || Arrays.stream(type.acceptableNames).anyMatch(name -> name.equalsIgnoreCase(friendlyName)))
-                    && type.mac == mac).findAny().orElse(null);
+                    && type.mac == mac && type.cjv == cjv).findAny().orElse(null);
+        }
+
+        public static VersionType find(String friendlyName, boolean mac)
+        {
+            return find(friendlyName, mac, false);
         }
     }
 }
