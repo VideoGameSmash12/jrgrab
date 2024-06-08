@@ -28,10 +28,10 @@ public class JRGConfiguration
     private Source source = Source.DEPLOY_HISTORY;
 
     @Builder.Default
-    private Aria2Configuration aria2 = Aria2Configuration.builder().build();
+    private boolean includingUnavailable = false;
 
     @Builder.Default
-    private JsonConfiguration json = JsonConfiguration.builder().build();
+    private Aria2Configuration aria2 = Aria2Configuration.builder().build();
 
     public static JRGConfiguration fromArguments(final String[] args)
     {
@@ -42,7 +42,7 @@ public class JRGConfiguration
         options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs("json or aria2c");
         options.accepts("source", "Where the application will fetch clients from.").withRequiredArg().describedAs("client_settings or deploy_history");
         options.accepts("mac", "Grab Mac clients.");
-        options.accepts("include-unavailable", "When dumping clients to JSON, include clients that aren't available.");
+        options.accepts("include-unavailable", "Include clients that aren't available when sending them to the chosen destination.");
 
         try
         {
@@ -69,11 +69,7 @@ public class JRGConfiguration
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
             if (set.has("mac")) configBuilder = configBuilder.mac(true);
-
-            JsonConfiguration.JsonConfigurationBuilder jsonBuilder = JsonConfiguration.builder();
-            if (configBuilder.destination == Destination.JSON && set.has("include-unavailable"))
-                jsonBuilder = jsonBuilder.includingUnavailable(true);
-            configBuilder.json(jsonBuilder.build());
+            if (set.has("include-unavailable")) configBuilder = configBuilder.includingUnavailable(true);
 
             return configBuilder.build();
         }
@@ -102,14 +98,6 @@ public class JRGConfiguration
         private int port = 6800;
     }
 
-    @Builder
-    @Getter
-    public static class JsonConfiguration
-    {
-        @Builder.Default
-        private boolean includingUnavailable = false;
-    }
-
     public enum Source
     {
         CLIENT_SETTINGS,
@@ -119,6 +107,7 @@ public class JRGConfiguration
     public enum Destination
     {
         ARIA2C,
+        DEPLOY_HISTORY,
         JSON
     }
 }

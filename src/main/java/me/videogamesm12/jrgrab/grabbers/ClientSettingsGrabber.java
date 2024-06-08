@@ -56,7 +56,7 @@ public class ClientSettingsGrabber extends AbstractGrabber
                 final HttpResponse<String> meta = HttpUtil.getFull("https://" + getConfig().getDomain() + "/" +
                         (getConfig().getChannel().equalsIgnoreCase("live") ? "channel/" + getConfig().getChannel() : "")
                         + (getConfig().isMac() ? "mac/" : "") + hash + "-" + (getConfig().isMac() ?
-                        (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudio.zip" : "Roblox.dmg") : "RobloxVersion.txt"));
+                        (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudio.zip" : "Roblox.dmg") : "rbxPkgManifest.txt"));
 
                 final long deployDate = meta.statusCode() != 403 ? HttpUtil.getDateFormat().parse(meta.headers().map().get("Last-Modified").toString()).getTime() : Instant.now().toEpochMilli();
 

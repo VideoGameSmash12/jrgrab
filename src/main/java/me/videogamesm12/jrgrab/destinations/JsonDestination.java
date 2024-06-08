@@ -26,13 +26,14 @@ public class JsonDestination extends AbstractDestination
         versions.parallelStream().forEach(version ->
         {
             Main.getLogger().info("Getting files for version {}", version.getVersionHash());
+            version.verifyAvailability(getConfig());
             version.fetchFiles(getConfig());
         });
 
         try
         {
             FileWriter writer = new FileWriter("versions." + getConfig().getChannel() + (getConfig().isMac() ? ".mac" : "") + ".json");
-            gson.toJson(versions.stream().filter(version -> getConfig().getJson().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
+            gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
             writer.close();
         }
         catch (IOException ex)

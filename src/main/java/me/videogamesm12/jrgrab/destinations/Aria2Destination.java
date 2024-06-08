@@ -28,10 +28,11 @@ public class Aria2Destination extends AbstractDestination
         versions.parallelStream().forEach(version ->
         {
             Main.getLogger().info("Getting files for version {}", version.getVersionHash());
+            version.verifyAvailability(getConfig());
             version.fetchFiles(getConfig());
         });
 
-        versions.stream().filter(version -> getConfig().getJson().isIncludingUnavailable()
+        versions.stream().filter(version -> getConfig().isIncludingUnavailable()
                 || version.getAvailable()).toList().parallelStream().forEach(client ->
         {
             Main.getLogger().info("Queuing files for download for version {}", client.getVersionHash());

@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.videogamesm12.jrgrab.data.JRGConfiguration;
 import me.videogamesm12.jrgrab.destinations.AbstractDestination;
 import me.videogamesm12.jrgrab.destinations.Aria2Destination;
+import me.videogamesm12.jrgrab.destinations.DeployHistoryDestination;
 import me.videogamesm12.jrgrab.destinations.JsonDestination;
 import me.videogamesm12.jrgrab.grabbers.AbstractGrabber;
 import me.videogamesm12.jrgrab.grabbers.ClientSettingsGrabber;
@@ -31,8 +32,9 @@ public class Main
         };
         final AbstractDestination destination = switch(configuration.getDestination())
         {
-            case JSON -> new JsonDestination(configuration);
             case ARIA2C -> new Aria2Destination(configuration);
+            case DEPLOY_HISTORY -> new DeployHistoryDestination(configuration);
+            case JSON -> new JsonDestination(configuration);
         };
 
         grabber.setup();

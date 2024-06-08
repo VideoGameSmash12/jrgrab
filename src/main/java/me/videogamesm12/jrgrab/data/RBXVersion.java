@@ -35,6 +35,23 @@ public class RBXVersion
     @Builder.Default
     private Boolean available = null;
 
+    public void verifyAvailability(JRGConfiguration configuration)
+    {
+        try
+        {
+            available = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
+                    + (!channel.equalsIgnoreCase("live") ? "channel/" + channel + "/" : "")
+                    + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
+                    + getVersionHash() + "-" + (type.isMac() ?
+                    (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudio.zip" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
+        }
+        catch (IOException | InterruptedException ex)
+        {
+            Main.getLogger().warn("Failed to verify availability for version {} in channel {}", getVersionHash(), channel, ex);
+            available = false;
+        }
+    }
+
     public void fetchFiles(JRGConfiguration configuration)
     {
         /* Mac clients are stored differently compared to Windows clients. Instead of things like content being split up
@@ -53,18 +70,6 @@ public class RBXVersion
                 files.put("RobloxStudioApp.zip", "");
                 files.put("RobloxStudio.zip", "");
                 files.put("RobloxStudio.dmg", "");
-            }
-
-            try
-            {
-                available = HttpUtil.getFull("https://" + configuration.getDomain() + "/" +
-                        (channel.equalsIgnoreCase("live") ? "channel/" + channel : "") + "mac/"
-                        + getVersionHash() + "-" + (type == VersionType.MAC_STUDIO ? "RobloxStudio.zip" : "Roblox.dmg")).statusCode() != 403;
-            }
-            catch (IOException | InterruptedException ex)
-            {
-                Main.getLogger().warn("Failed to verify availability for version {} in channel {}", getVersionHash(), channel, ex);
-                available = false;
             }
         }
         else
@@ -99,8 +104,6 @@ public class RBXVersion
                         files.put(name, hash);
                     }
                 }
-
-                available = true;
             }
             catch (IOException | InterruptedException ex)
             {
