@@ -49,7 +49,7 @@ public class RBXVersion
                     + (!channel.equalsIgnoreCase("live") ? "channel/" + channel + "/" : "")
                     + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
                     + getVersionHash() + "-" + (type.isMac() ?
-                    (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudio.zip" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
+                    (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudioVersion.txt" : "RobloxVersion.txt") : "rbxPkgManifest.txt")).statusCode() != 403;
         }
         catch (IOException | InterruptedException ex)
         {
@@ -180,7 +180,7 @@ public class RBXVersion
         }
 
         return builder()
-                .fullVersionString("Obtained from ClientSettings")
+                .fullVersionString("Obtained from elsewhere")
                 .type(type)
                 .versionHash(hash)
                 .deployDate(deployDate)

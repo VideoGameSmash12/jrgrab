@@ -40,6 +40,7 @@ public class Main
             case GITHUB_TRACKER -> new TrackerGitHubGrabber(configuration);
             case JSON -> new JsonGrabber(configuration);
             case LEGACY -> new LegacyGrabber(configuration);
+            case MANUAL -> new ManualGrabber(configuration);
         };
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())

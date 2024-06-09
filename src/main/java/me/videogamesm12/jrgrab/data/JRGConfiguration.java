@@ -9,9 +9,7 @@ import me.videogamesm12.jrgrab.Main;
 import org.eclipse.jgit.util.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Builder
 @Getter
@@ -37,6 +35,9 @@ public class JRGConfiguration
     @Builder.Default
     private Aria2Configuration aria2 = Aria2Configuration.builder().build();
 
+    @Builder.Default
+    private List<String> manuallySpecifiedClients = new ArrayList<>();
+
     public static JRGConfiguration fromArguments(final String[] args)
     {
         final OptionParser options = new OptionParser();
@@ -46,6 +47,7 @@ public class JRGConfiguration
         options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("source", "Where the application will fetch clients from. Defaults to deploy_history.").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("mac", "Grab Mac clients.");
+        options.accepts("clients", "Manually grab these specified clients if you use the \"manual\" source.").withRequiredArg().describedAs("[channel@]version-hash");
         options.accepts("include-unavailable", "Include clients that aren't available when sending them to the chosen destination.");
 
         try
@@ -69,11 +71,12 @@ public class JRGConfiguration
             JRGConfigurationBuilder configBuilder = builder();
 
             if (set.has("domain")) configBuilder = configBuilder.domain((String) set.valueOf("domain"));
-            if (set.has("channel")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channel")).split(",")).toList());
+            if (set.has("channels")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channels")).split(",")).toList());
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
             if (set.has("mac")) configBuilder = configBuilder.mac(true);
             if (set.has("include-unavailable")) configBuilder = configBuilder.includingUnavailable(true);
+            if (set.has("clients")) configBuilder = configBuilder.manuallySpecifiedClients(Arrays.stream(((String) set.valueOf("clients")).split(",")).filter(str -> !str.isBlank() && !str.isEmpty()).toList());
 
             return configBuilder.build();
         }
@@ -108,7 +111,8 @@ public class JRGConfiguration
         DEPLOY_HISTORY,
         GITHUB_TRACKER,
         JSON,
-        LEGACY
+        LEGACY,
+        MANUAL;
     }
 
     public enum Destination
