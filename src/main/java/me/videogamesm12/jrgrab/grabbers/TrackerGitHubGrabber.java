@@ -110,7 +110,10 @@ public class TrackerGitHubGrabber extends AbstractGrabber
                             final String version = matcher.group(3);
                             final long deployDate = ((long) commit.getCommitTime()) * 1000;
 
-                            storage.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, name, new ArrayList<>(), type.isCjv()));
+                            if (storage.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
+                            {
+                                storage.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, name, new ArrayList<>(), type.isCjv()));
+                            }
                         }
                     }
                     catch (IOException ex)

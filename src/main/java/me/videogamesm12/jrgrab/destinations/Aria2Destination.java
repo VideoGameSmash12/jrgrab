@@ -27,8 +27,10 @@ public class Aria2Destination extends AbstractDestination
     {
         versions.parallelStream().forEach(version -> version.fetchFiles(getConfig()));
 
-        versions.stream().filter(version -> getConfig().isIncludingUnavailable()
-                || version.getAvailable()).toList().forEach(client ->
+        // Since we have a lot more free resources when we're grabbing just one channel's worth of clients, we can use
+        //  parallel streams to get more done within a timeframe.
+        (getConfig().getChannels().size() == 1 ? versions.parallelStream() : versions.stream())
+                .filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList().forEach(client ->
         {
             Main.getLogger().info("Queuing files for download for version {}", client.getVersionHash());
 
