@@ -6,6 +6,7 @@ import joptsimple.OptionSet;
 import lombok.Builder;
 import lombok.Getter;
 import me.videogamesm12.jrgrab.Main;
+import org.eclipse.jgit.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,9 +42,9 @@ public class JRGConfiguration
         final OptionParser options = new OptionParser();
         options.accepts("help", "Prints this help message.").forHelp();
         options.accepts("domain", "The domain to use when grabbing clients. Unless you're attempting to scrape something like LuoBu, there isn't a need to change this.").withRequiredArg().describedAs("URL");
-        options.accepts("channel", "The channel to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
-        options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs("json or aria2c");
-        options.accepts("source", "Where the application will fetch clients from.").withRequiredArg().describedAs("client_settings or deploy_history");
+        options.accepts("channels", "The channels to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
+        options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toLowerCase()).toList(), ", ", ", or "));
+        options.accepts("source", "Where the application will fetch clients from. Defaults to deploy_history.").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("mac", "Grab Mac clients.");
         options.accepts("include-unavailable", "Include clients that aren't available when sending them to the chosen destination.");
 
@@ -106,7 +107,8 @@ public class JRGConfiguration
         CLIENT_SETTINGS,
         DEPLOY_HISTORY,
         GITHUB_TRACKER,
-        JSON
+        JSON,
+        LEGACY
     }
 
     public enum Destination

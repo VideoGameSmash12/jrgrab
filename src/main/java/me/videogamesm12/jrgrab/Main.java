@@ -39,6 +39,7 @@ public class Main
             case DEPLOY_HISTORY -> new DeployGrabber(configuration);
             case GITHUB_TRACKER -> new TrackerGitHubGrabber(configuration);
             case JSON -> new JsonGrabber(configuration);
+            case LEGACY -> new LegacyGrabber(configuration);
         };
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())
