@@ -42,6 +42,7 @@ public class TrackerGitHubGrabber extends AbstractGrabber
             }
         }
 
+        Main.getLogger().info("Cloning repository");
         try
         {
             repository = Git.cloneRepository()

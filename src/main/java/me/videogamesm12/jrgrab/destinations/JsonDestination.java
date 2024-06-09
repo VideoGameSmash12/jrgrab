@@ -9,7 +9,6 @@ import me.videogamesm12.jrgrab.data.RBXVersion;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 
 public class JsonDestination extends AbstractDestination
 {
@@ -27,6 +26,7 @@ public class JsonDestination extends AbstractDestination
 
         try
         {
+            Main.getLogger().info("Dumping JSON-formatted versions to disk");
             FileWriter writer = new FileWriter("versions." + channel + (getConfig().isMac() ? ".mac" : "") + ".json");
             gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
             writer.close();
