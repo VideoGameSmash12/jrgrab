@@ -73,7 +73,7 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
         }
     }
 
-    public void getVersions()
+    public void getVersions(List<String> known)
     {
         try
         {
@@ -120,7 +120,7 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
 
                             if (found.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
                             {
-                                found.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, "live", new ArrayList<>(), false));
+                                found.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, "live", known, false));
                             }
                         }
                     }
@@ -138,7 +138,7 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         if (repository == null || !channel.equalsIgnoreCase("live"))
         {
@@ -147,7 +147,7 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
 
         if (found.isEmpty())
         {
-            getVersions();
+            getVersions(known);
             cleanUp();
         }
 

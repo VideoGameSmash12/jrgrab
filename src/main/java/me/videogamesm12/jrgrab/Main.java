@@ -1,7 +1,11 @@
 package me.videogamesm12.jrgrab;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import me.videogamesm12.jrgrab.data.JRGConfiguration;
+import me.videogamesm12.jrgrab.data.RBXVersion;
 import me.videogamesm12.jrgrab.destinations.AbstractDestination;
 import me.videogamesm12.jrgrab.destinations.Aria2Destination;
 import me.videogamesm12.jrgrab.destinations.DeployHistoryDestination;
@@ -10,10 +14,21 @@ import me.videogamesm12.jrgrab.grabbers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Main
 {
     @Getter
     private static final Logger logger = LoggerFactory.getLogger("jrgrab");
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args)
     {
@@ -30,6 +45,22 @@ public class Main
         if (configuration == null)
         {
             return;
+        }
+
+        final Map<String, List<String>> known = new HashMap<>();
+        final File knownFile = new File("known.json");
+        if (configuration.isIncremental() && knownFile.exists())
+        {
+            getLogger().info("Loading known client database");
+            try (BufferedReader reader = Files.newBufferedReader(knownFile.toPath()))
+            {
+                known.putAll(gson.fromJson(reader, new TypeToken<Map<String, ArrayList<String>>>(){}.getType()));
+                getLogger().info("Loaded database");
+            }
+            catch (IOException ex)
+            {
+                getLogger().error("Failed to load client database", ex);
+            }
         }
 
         getLogger().info("Setting up grabber");
@@ -54,7 +85,38 @@ public class Main
 
         grabber.setup();
         getLogger().info("Grabbing channels");
-        configuration.getChannels().forEach(channel -> destination.sendVersions(grabber.getVersions(channel), channel));
+        configuration.getChannels().forEach(channel ->
+        {
+            if (!known.containsKey(channel))
+            {
+                known.put(channel, new ArrayList<>());
+            }
+
+            List<String> k = known.get(channel);
+            List<RBXVersion> clients = grabber.getVersions(channel, k);
+
+            if (configuration.isIncremental())
+            {
+                k.addAll(clients.stream().map(RBXVersion::getVersionHash).toList());
+            }
+
+            destination.sendVersions(clients, channel);
+        });
+
+        if (configuration.isIncremental())
+        {
+            getLogger().info("Saving known client database to disk");
+
+            try (BufferedWriter writer = Files.newBufferedWriter(new File("known.json").toPath()))
+            {
+                gson.toJson(known, writer);
+            }
+            catch (IOException ex)
+            {
+                Main.getLogger().error("Failed to write known client database to disk", ex);
+            }
+        }
+
         getLogger().info("Done");
     }
 }

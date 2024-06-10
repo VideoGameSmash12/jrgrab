@@ -73,7 +73,7 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
         }
     }
 
-    public void getVersions()
+    public void getVersions(List<String> known)
     {
         try
         {
@@ -145,7 +145,7 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
                 {
                     rbxVersion = RBXVersion.fromClientSettings(
                             commit.getCommitTime() > 1569391200 ? RBXVersion.VersionType.WINDOWS_STUDIO_X64 : RBXVersion.VersionType.WINDOWS_STUDIO_X86,
-                            versionGuid, deployDate, version, "live", new ArrayList<>(), false);
+                            versionGuid, deployDate, version, "live", known, false);
                     found.add(rbxVersion);
                 }
                 else
@@ -174,7 +174,7 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         if (repository == null || !channel.equalsIgnoreCase("live"))
         {
@@ -183,7 +183,7 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
 
         if (found.isEmpty())
         {
-            getVersions();
+            getVersions(known);
             cleanUp();
         }
 

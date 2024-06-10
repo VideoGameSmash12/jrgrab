@@ -25,7 +25,7 @@ public class LegacyGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         final List<RBXVersion> versions = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public class LegacyGrabber extends AbstractGrabber
 
                 versions.add(RBXVersion.fromClientSettings(
                         getConfig().isMac() ? RBXVersion.VersionType.MAC_PLAYER : RBXVersion.VersionType.WINDOWS_PLAYER,
-                        hash, deployDate, "0, 0, 0, 0", channel, new ArrayList<>(), false));
+                        hash, deployDate, "0, 0, 0, 0", channel, known, false));
             }
 
             // Studio
@@ -78,7 +78,7 @@ public class LegacyGrabber extends AbstractGrabber
 
                 versions.add(RBXVersion.fromClientSettings(
                         getConfig().isMac() ? RBXVersion.VersionType.MAC_STUDIO : RBXVersion.VersionType.WINDOWS_STUDIO_X86,
-                        hash, deployDate, "0, 0, 0, 0", channel, new ArrayList<>(), false));
+                        hash, deployDate, "0, 0, 0, 0", channel, known, false));
             }
 
             // versionStudio on Windows was last updated in December 2012 and points to the last MFCStudio version
@@ -102,7 +102,7 @@ public class LegacyGrabber extends AbstractGrabber
                     }
 
                     versions.add(RBXVersion.fromClientSettings(RBXVersion.VersionType.WINDOWS_STUDIO_X86, hash, deployDate,
-                            "0, 0, 0, 0", channel, new ArrayList<>(), false));
+                            "0, 0, 0, 0", channel, known, false));
                 }
             }
         }

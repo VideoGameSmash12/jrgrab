@@ -47,7 +47,7 @@ public class ManualGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         return clients.getOrDefault(channel, new ArrayList<>()).stream().map(hash ->
         {
@@ -129,7 +129,7 @@ public class ManualGrabber extends AbstractGrabber
                 return null;
             }
 
-            return RBXVersion.fromClientSettings(type, hash, deployDate, "0, 0, 0, 0", channel, new ArrayList<>(), false);
+            return RBXVersion.fromClientSettings(type, hash, deployDate, "0, 0, 0, 0", channel, known, false);
         }).filter(Objects::nonNull).toList();
     }
 }

@@ -67,7 +67,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
         }
     }
 
-    public void getVersions()
+    public void getVersions(List<String> known)
     {
         try
         {
@@ -124,7 +124,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
 
                             if (storage.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
                             {
-                                storage.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, name, new ArrayList<>(), type.isCjv()));
+                                storage.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, name, known, type.isCjv()));
                             }
                         }
                     }
@@ -142,7 +142,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         if (repository == null)
         {
@@ -151,7 +151,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
 
         if (channels.isEmpty())
         {
-            getVersions();
+            getVersions(known);
             cleanUp();
         }
 

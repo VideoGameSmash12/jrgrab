@@ -25,7 +25,7 @@ public class DeployGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         try
         {
@@ -38,7 +38,7 @@ public class DeployGrabber extends AbstractGrabber
             {
                 try
                 {
-                    return RBXVersion.fromString(line, channel, new ArrayList<>(), getConfig().isMac(), false);
+                    return RBXVersion.fromString(line, channel, known, getConfig().isMac(), false);
                 }
                 catch (ParseException e)
                 {

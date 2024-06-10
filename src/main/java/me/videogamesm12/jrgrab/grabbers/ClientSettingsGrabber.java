@@ -32,7 +32,7 @@ public class ClientSettingsGrabber extends AbstractGrabber
     }
 
     @Override
-    public List<RBXVersion> getVersions(String channel)
+    public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         return Arrays.stream(RBXVersion.VersionType.values()).filter(type -> getConfig().isMac() == type.isMac() && !type.isCjv()).map(type ->
         {
@@ -61,7 +61,7 @@ public class ClientSettingsGrabber extends AbstractGrabber
 
                 final long deployDate = meta.statusCode() != 403 ? HttpUtil.getDateFormat().parse(meta.headers().map().get("Last-Modified").toString()).getTime() : Instant.now().toEpochMilli();
 
-                return RBXVersion.fromClientSettings(type, hash, deployDate, version, channel, new ArrayList<>(), false);
+                return RBXVersion.fromClientSettings(type, hash, deployDate, version, channel, known, false);
             }
             catch (IOException | InterruptedException | ParseException ex)
             {

@@ -45,6 +45,9 @@ public class JRGConfiguration
     private boolean includingUnavailable = false;
 
     @Builder.Default
+    private boolean incremental = false;
+
+    @Builder.Default
     private Aria2Configuration aria2 = Aria2Configuration.builder().build();
 
     @Builder.Default
@@ -68,6 +71,7 @@ public class JRGConfiguration
         options.accepts("aria2-ip", "If using the \"aria2c\" destination, this sets the IP address for the daemon.").withRequiredArg();
         options.accepts("aria2-port", "If using the \"aria2c\" destination, this sets the port for the daemon.").withRequiredArg().ofType(int.class);
         options.accepts("aria2-token", "If using the \"aria2c\" destination, this sets the authentication token for the daemon (if one is present).").withRequiredArg();
+        options.accepts("incremental", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
 
         try
         {
@@ -99,6 +103,7 @@ public class JRGConfiguration
             if (set.has("mac-arm64")) configBuilder = configBuilder.arm64(true);
             if (set.has("bruteforce-files")) configBuilder = configBuilder.fetchingManifestForFiles(false);
             if (set.has("include-unavailable")) configBuilder = configBuilder.includingUnavailable(true);
+            if (set.has("incremental")) configBuilder = configBuilder.incremental(true);
             if (set.has("clients")) configBuilder = configBuilder.manuallySpecifiedClients(Arrays.stream(((String) set.valueOf("clients")).split(",")).filter(str -> !str.isBlank() && !str.isEmpty()).toList());
             if (configBuilder.destination == Destination.ARIA2C)
             {
