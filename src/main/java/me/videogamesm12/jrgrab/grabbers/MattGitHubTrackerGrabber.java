@@ -16,13 +16,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
-public class TrackerGitHubGrabber extends AbstractGrabber
+public class MattGitHubTrackerGrabber extends AbstractGrabber
 {
     private final File folder = new File("temp");
     private final Map<String, List<RBXVersion>> channels = new HashMap<>();
     private Git repository = null;
 
-    public TrackerGitHubGrabber(JRGConfiguration config)
+    public MattGitHubTrackerGrabber(JRGConfiguration config)
     {
         super(config, false);
     }

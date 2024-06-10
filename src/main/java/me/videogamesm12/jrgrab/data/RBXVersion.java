@@ -58,6 +58,33 @@ public class RBXVersion
         }
     }
 
+    public void fetchFiles(List<String> manifest)
+    {
+        if (files.isEmpty())
+        {
+            return;
+        }
+
+        final Pattern filePattern = Pattern.compile("^([A-z0-9-]+\\.[A-z0-9]+)");
+        final Pattern hashPattern = Pattern.compile("^[a-z0-9]{32}$");
+
+        String name = null;
+        String hash = null;
+
+        for (String line : manifest)
+        {
+            if (filePattern.matcher(line).find())
+            {
+                name = line;
+            }
+            else if (hashPattern.matcher(line).find())
+            {
+                hash = line;
+                files.put(name, hash);
+            }
+        }
+    }
+
     public void fetchFiles(JRGConfiguration configuration)
     {
         // We already got the files we needed

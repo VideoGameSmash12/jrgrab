@@ -108,11 +108,12 @@ public class JRGConfiguration
     public enum Source
     {
         CLIENT_SETTINGS,
+        CLONETROOPER_GITHUB_TRACKER,
         DEPLOY_HISTORY,
-        GITHUB_TRACKER,
         JSON,
         LEGACY,
-        MANUAL;
+        MANUAL,
+        MATT_GITHUB_TRACKER;
     }
 
     public enum Destination

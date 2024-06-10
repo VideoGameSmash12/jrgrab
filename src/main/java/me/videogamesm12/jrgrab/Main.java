@@ -36,11 +36,12 @@ public class Main
         final AbstractGrabber grabber = switch(configuration.getSource())
         {
             case CLIENT_SETTINGS -> new ClientSettingsGrabber(configuration);
+            case CLONETROOPER_GITHUB_TRACKER -> new ClonetrooperGitHubTrackerGrabber(configuration);
             case DEPLOY_HISTORY -> new DeployGrabber(configuration);
-            case GITHUB_TRACKER -> new TrackerGitHubGrabber(configuration);
             case JSON -> new JsonGrabber(configuration);
             case LEGACY -> new LegacyGrabber(configuration);
             case MANUAL -> new ManualGrabber(configuration);
+            case MATT_GITHUB_TRACKER -> new MattGitHubTrackerGrabber(configuration);
         };
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())
