@@ -28,7 +28,7 @@ public class JsonDestination extends AbstractDestination
         {
             Main.getLogger().info("Dumping JSON-formatted versions to disk");
             FileWriter writer = new FileWriter("versions." + channel + (getConfig().isMac() ? ".mac"
-                    + (getConfig().isArm64() ? ".arm64" : "") : "") + ".json");
+                    + (getConfig().isArm64() ? ".arm64" : "") : "") + (getConfig().isCjv() ? ".cjv" : "") + ".json");
             gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
             writer.close();
         }

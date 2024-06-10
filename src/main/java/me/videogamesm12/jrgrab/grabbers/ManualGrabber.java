@@ -10,6 +10,11 @@ import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.util.*;
 
+/**
+ * <h1>ManualGrabber</h1>
+ * <p>Grabber that grabs clients based on hashes manually provided to the application through the "clients" command-line
+ * parameter.</p>
+ */
 public class ManualGrabber extends AbstractGrabber
 {
     private final Map<String, List<String>> clients = new HashMap<>();

@@ -17,6 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
+/**
+ * <h1>MattGitHubTrackerGrabber</h1>
+ * <p>Grabber that scrapes the commit history of SNCPlay42's roblox-api-dumps repository to find older versions of the
+ * client.</p>
+ */
 public class SNCGitHubTrackerGrabber extends AbstractGrabber
 {
     private final File folder = new File("temp");

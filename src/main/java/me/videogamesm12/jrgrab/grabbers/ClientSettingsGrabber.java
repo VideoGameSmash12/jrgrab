@@ -17,6 +17,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * <h1>ClientSettingsGrabber</h1>
+ * <p>Grabber that finds the latest versions of the client from a provided channel using the clientsettings.roblox.com
+ * endpoint.</p>
+ */
 public class ClientSettingsGrabber extends AbstractGrabber
 {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();

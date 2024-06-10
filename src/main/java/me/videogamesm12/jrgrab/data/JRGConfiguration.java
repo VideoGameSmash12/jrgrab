@@ -34,6 +34,9 @@ public class JRGConfiguration
     private boolean arm64 = false;
 
     @Builder.Default
+    private boolean cjv = false;
+
+    @Builder.Default
     private boolean fetchingManifestForFiles = true;
 
     private Destination destination;
@@ -63,6 +66,7 @@ public class JRGConfiguration
         options.accepts("channels", "The channels to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
         options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("source", "Where the application will fetch clients from. Defaults to deploy_history.").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toLowerCase()).toList(), ", ", ", or "));
+        options.accepts("cjv", "Grab CJV clients.");
         options.accepts("mac", "Grab Mac clients.");
         options.accepts("mac-arm64", "If grabbing Mac clients, only grab arm64-based clients").availableIf("mac");
         options.accepts("bruteforce-files", "When fetching client files, use a hardcoded list of files instead of trying to find them from package manifests. Use in conjunction with --include-unavailable to bypass any other checks that may prevent them from being downloaded");
@@ -99,6 +103,7 @@ public class JRGConfiguration
             if (set.has("channels")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channels")).split(",")).toList());
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
+            if (set.has("cjv")) configBuilder = configBuilder.cjv(true);
             if (set.has("mac")) configBuilder = configBuilder.mac(true);
             if (set.has("mac-arm64")) configBuilder = configBuilder.arm64(true);
             if (set.has("bruteforce-files")) configBuilder = configBuilder.fetchingManifestForFiles(false);

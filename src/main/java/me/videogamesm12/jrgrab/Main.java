@@ -19,10 +19,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Main
 {
@@ -32,7 +29,6 @@ public class Main
 
     public static void main(String[] args)
     {
-
         System.out.println("""
                      _                   _   \s
                     (_)_ _ __ _ _ _ __ _| |__\s
@@ -93,7 +89,7 @@ public class Main
             }
 
             List<String> k = known.get(channel);
-            List<RBXVersion> clients = grabber.getVersions(channel, k);
+            List<RBXVersion> clients = grabber.getVersions(channel, k).stream().filter(Objects::nonNull).toList();
 
             if (configuration.isIncremental())
             {

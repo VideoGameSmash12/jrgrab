@@ -121,39 +121,39 @@ public class RBXVersion
             {
                 if (type.name().contains("STUDIO"))
                 {
-                    files.put("BuiltInPlugins.zip", null);
-                    files.put("BuiltInStandalone.zip", null);
-                    files.put("content-luapackages.zip", null);
-                    files.put("content-qt_translations.zip", null);
-                    files.put("content-translations.zip", null);
-                    files.put("content-scripts.zip", null);
-                    files.put("content-models.zip", null);
-                    files.put("LibrariesQt5.zip", null);
-                    files.put("Qml.zip", null);
-                    files.put("RobloxStudioLauncherBeta.exe", null);
-                    files.put("RobloxStudio.zip", null);
-                    files.put("ssl.zip", null);
-                    files.put("Plugins.zip", null);
+                    files.put("BuiltInPlugins.zip", "");
+                    files.put("BuiltInStandalone.zip", "");
+                    files.put("content-luapackages.zip", "");
+                    files.put("content-qt_translations.zip", "");
+                    files.put("content-translations.zip", "");
+                    files.put("content-scripts.zip", "");
+                    files.put("content-models.zip", "");
+                    files.put("LibrariesQt5.zip", "");
+                    files.put("Qml.zip", "");
+                    files.put("RobloxStudioLauncherBeta.exe", "");
+                    files.put("RobloxStudio.zip", "");
+                    files.put("ssl.zip", "");
+                    files.put("Plugins.zip", "");
                 }
 
-                files.put("content-avatar.zip", null);
-                files.put("content-fonts.zip", null);
-                files.put("content-music.zip", null);
-                files.put("content-platform-fonts.zip", null);
-                files.put("content-terrain.zip", null);
-                files.put("content-particles.zip", null);
-                files.put("content-sky.zip", null);
-                files.put("content-sounds.zip", null);
-                files.put("content-textures.zip", null);
-                files.put("content-textures2.zip", null);
-                files.put("content-textures3.zip", null);
-                files.put("Libraries.zip", null);
-                files.put("NPRobloxProxy.zip", null);
-                files.put("redist.zip", null);
-                files.put("Roblox.exe", null);
-                files.put("RobloxApp.zip", null);
-                files.put("RobloxProxy.zip", null);
-                files.put("shaders.zip", null);
+                files.put("content-avatar.zip", "");
+                files.put("content-fonts.zip", "");
+                files.put("content-music.zip", "");
+                files.put("content-platform-fonts.zip", "");
+                files.put("content-terrain.zip", "");
+                files.put("content-particles.zip", "");
+                files.put("content-sky.zip", "");
+                files.put("content-sounds.zip", "");
+                files.put("content-textures.zip", "");
+                files.put("content-textures2.zip", "");
+                files.put("content-textures3.zip", "");
+                files.put("Libraries.zip", "");
+                files.put("NPRobloxProxy.zip", "");
+                files.put("redist.zip", "");
+                files.put("Roblox.exe", "");
+                files.put("RobloxApp.zip", "");
+                files.put("RobloxProxy.zip", "");
+                files.put("shaders.zip", "");
 
                 available = true;
                 return;
@@ -233,6 +233,9 @@ public class RBXVersion
             time = Instant.now().toEpochMilli();
         }
 
+        // De-duplication
+        blacklist.add(matcher.group(2));
+
         return builder()
                 .fullVersionString(str)
                 .type(VersionType.find(matcher.group(1), mac))
@@ -271,9 +274,9 @@ public class RBXVersion
         MAC_STUDIO_CJV("Studio", "MacStudio", new String[]{"MacStudioCJV"}, true, false),
         WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer", "SetupVersion"}, false,false),
         WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "Studio", "Studio-SetupVersion"}, false, false),
-        WINDOWS_STUDIO_CJV_X86("Studio", "WindowsStudio", new String[]{"WindowsStudioCJV"}, false, true),
+        WINDOWS_STUDIO_CJV_X86("Studio", "WindowsStudio", new String[]{"Studio", "WindowsStudioCJV"}, false, true),
         WINDOWS_STUDIO_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64", "Studio64"}, false, false),
-        WINDOWS_STUDIO_CJV_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64CJV"}, false, true);
+        WINDOWS_STUDIO_CJV_X64("Studio64", "WindowsStudio64", new String[]{"Studio64", "WindowsStudio64CJV"}, false, true);
 
         private final String friendlyName;
         private final String clientSettingsName;

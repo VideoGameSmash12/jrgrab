@@ -17,6 +17,12 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
+/**
+ * <h1>ClonetrooperGitHubTrackerGrabber</h1>
+ * <p>Grabber that scrapes the commit history of MaximumADHD's Roblox-Client-Tracker GitHub repository to find
+ * versions of the client.</p>
+ * @implNote <p>Only supports finding Studio and Studio64 clients for Windows.</p>
+ */
 public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
 {
     private final File folder = new File("temp");

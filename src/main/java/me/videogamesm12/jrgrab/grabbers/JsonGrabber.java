@@ -13,6 +13,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * <h1>JsonGrabber</h1>
+ * <p>Grabber that imports previously generated versions.json files from previous runs of the application.</p>
+ */
 public class JsonGrabber extends AbstractGrabber
 {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();

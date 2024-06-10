@@ -17,6 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
+/**
+ * <h1>MattGitHubTrackerGrabber</h1>
+ * <p>Grabber that scrapes the commit history of bluepilledgreat's Roblox-DeployHistory-Tracker repository to find
+ * versions of the client.</p>
+ */
 public class MattGitHubTrackerGrabber extends AbstractGrabber
 {
     private final File folder = new File("temp");
@@ -87,6 +92,9 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                     return;
                 }
 
+                // Matt's tracker is structured like this: every channel has their own dedicated txt file containing the
+                //  latest version hashes for Mac and Windows clients of their respective types along with their version
+                //  which is the same as what is reported by DeployHistory, but formatted differently.
                 Arrays.stream(Objects.requireNonNull(folder.listFiles())).filter(file -> file.getName().endsWith(".txt")
                         && getConfig().getChannels().contains(file.getName().toLowerCase().replace(".txt", ""))
                         || getConfig().getChannels().contains("*")).toList().forEach(channel ->
@@ -99,10 +107,8 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                     }
 
                     final List<RBXVersion> storage = channels.get(name);
-                    try
+                    try (final Scanner scanner = new Scanner(channel))
                     {
-                        final Scanner scanner = new Scanner(channel);
-
                         while (scanner.hasNext())
                         {
                             final String line = scanner.nextLine();

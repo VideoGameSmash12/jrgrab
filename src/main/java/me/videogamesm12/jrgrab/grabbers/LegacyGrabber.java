@@ -11,6 +11,13 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <h1>LegacyGrabber</h1>
+ * <p>Grabber that finds client versions from a provided channel using the legacy "version", "versionStudio", and
+ * "versionQTStudio" endpoints.</p>
+ * @implNote <p>Not reliable for scraping newer channels or finding newer clients as Roblox stopped updating this
+ *              endpoint in August 2023.</p>
+ */
 public class LegacyGrabber extends AbstractGrabber
 {
     public LegacyGrabber(JRGConfiguration config)

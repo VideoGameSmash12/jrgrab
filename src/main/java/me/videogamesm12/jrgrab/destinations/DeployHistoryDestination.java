@@ -21,7 +21,7 @@ public class DeployHistoryDestination extends AbstractDestination
     {
         versions.parallelStream().forEach(version -> version.verifyAvailability(getConfig()));
 
-        File folder = new File(channel + (getConfig().isMac() ? "/mac/" + (getConfig().isArm64() ? "arm64/" : "") : ""));
+        File folder = new File(channel + (getConfig().isMac() ? "/mac/" + (getConfig().isArm64() ? "arm64/" : "") + (getConfig().isCjv() ? "cjv/" : "") : ""));
         folder.mkdirs();
 
         try

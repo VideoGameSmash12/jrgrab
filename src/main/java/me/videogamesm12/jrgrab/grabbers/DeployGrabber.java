@@ -12,6 +12,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * <h1>DeployGrabber</h1>
+ * <p>Grabber that scrapes the DeployHistory.txt file present in most channels to find clients.</p>
+ * @implNote <p>Not always reliable for scraping non-live channels as Roblox started redacting the version hashes of
+ *              clients logged in the DeployHistory starting in 2022/2023.</p>
+ */
 public class DeployGrabber extends AbstractGrabber
 {
     public DeployGrabber(JRGConfiguration config)
@@ -38,7 +44,7 @@ public class DeployGrabber extends AbstractGrabber
             {
                 try
                 {
-                    return RBXVersion.fromString(line, channel, known, getConfig().isMac(), false);
+                    return RBXVersion.fromString(line, channel, known, getConfig().isMac(), getConfig().isCjv());
                 }
                 catch (ParseException e)
                 {
