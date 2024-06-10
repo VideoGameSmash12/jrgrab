@@ -122,7 +122,6 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
 
                             if (found.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
                             {
-                                Main.getLogger().info("Found one! {}", hash);
                                 found.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, "live", new ArrayList<>(), false));
                             }
                         }
