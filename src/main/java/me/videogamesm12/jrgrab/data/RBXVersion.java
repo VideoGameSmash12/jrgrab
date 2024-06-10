@@ -148,6 +148,9 @@ public class RBXVersion
                     }
                 }
 
+                files.put("rbxPkgManifest.txt", "");
+                files.put("rbxManifest.txt", "");
+
                 available = true;
             }
             catch (IOException | InterruptedException ex)
