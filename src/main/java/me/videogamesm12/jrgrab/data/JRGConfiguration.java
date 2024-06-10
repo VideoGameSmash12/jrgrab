@@ -19,10 +19,19 @@ public class JRGConfiguration
     private String domain = "setup.rbxcdn.com";
 
     @Builder.Default
+    private String repositoryUrl = null;
+
+    @Builder.Default
+    private String branch = null;
+
+    @Builder.Default
     private List<String> channels = List.of("live");
 
     @Builder.Default
     private boolean mac = false;
+
+    @Builder.Default
+    private boolean fetchingManifestForFiles = true;
 
     private Destination destination;
 
@@ -43,10 +52,13 @@ public class JRGConfiguration
         final OptionParser options = new OptionParser();
         options.accepts("help", "Prints this help message.").forHelp();
         options.accepts("domain", "The domain to use when grabbing clients. Unless you're attempting to scrape something like LuoBu, there isn't a need to change this.").withRequiredArg().describedAs("URL");
+        options.accepts("branch", "The branch to use if using a GitHub-based scraper. You shouldn't need to change this unless the repository you're scraping has other branches you want to dig through.").withRequiredArg().describedAs("branch name");
+        options.accepts("repository-url", "The repository to use if using a GitHub-based scraper. You shouldn't need to change this unless you're scraping a fork of a supported tracker.").withRequiredArg().describedAs("URL");
         options.accepts("channels", "The channels to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
         options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("source", "Where the application will fetch clients from. Defaults to deploy_history.").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("mac", "Grab Mac clients.");
+        options.accepts("bruteforce-files", "When fetching client files, use a hardcoded list of files instead of trying to find them from package manifests. Use in conjunction with --include-unavailable to bypass any other checks that may prevent them from being downloaded");
         options.accepts("clients", "Manually grab these specified clients if you use the \"manual\" source.").withRequiredArg().describedAs("[channel@]version-hash");
         options.accepts("include-unavailable", "Include clients that aren't available when sending them to the chosen destination.");
 
@@ -70,11 +82,14 @@ public class JRGConfiguration
 
             JRGConfigurationBuilder configBuilder = builder();
 
+            if (set.has("branch")) configBuilder = configBuilder.branch((String) set.valueOf("branch"));
+            if (set.has("repository-url")) configBuilder = configBuilder.repositoryUrl((String) set.valueOf("repository-url"));
             if (set.has("domain")) configBuilder = configBuilder.domain((String) set.valueOf("domain"));
             if (set.has("channels")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channels")).split(",")).toList());
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
             if (set.has("mac")) configBuilder = configBuilder.mac(true);
+            if (set.has("bruteforce-files")) configBuilder = configBuilder.fetchingManifestForFiles(false);
             if (set.has("include-unavailable")) configBuilder = configBuilder.includingUnavailable(true);
             if (set.has("clients")) configBuilder = configBuilder.manuallySpecifiedClients(Arrays.stream(((String) set.valueOf("clients")).split(",")).filter(str -> !str.isBlank() && !str.isEmpty()).toList());
 
@@ -113,7 +128,8 @@ public class JRGConfiguration
         JSON,
         LEGACY,
         MANUAL,
-        MATT_GITHUB_TRACKER;
+        MATT_GITHUB_TRACKER,
+        SNC_GITHUB_TRACKER;
     }
 
     public enum Destination
