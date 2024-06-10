@@ -10,20 +10,22 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
-public class MattGitHubTrackerGrabber extends AbstractGrabber
+public class SNCGitHubTrackerGrabber extends AbstractGrabber
 {
     private final File folder = new File("temp");
-    private final Map<String, List<RBXVersion>> channels = new HashMap<>();
+    private final List<RBXVersion> found = new ArrayList<>();
     private Git repository = null;
 
-    public MattGitHubTrackerGrabber(JRGConfiguration config)
+    public SNCGitHubTrackerGrabber(JRGConfiguration config)
     {
         super(config, false);
     }
@@ -31,6 +33,12 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
     @Override
     public void setup()
     {
+        // Sanity checks
+        if (getConfig().isMac())
+        {
+            throw new IllegalArgumentException("Mac clients cannot be scraped using this grabber");
+        }
+
         if (folder.isDirectory())
         {
             try
@@ -43,11 +51,11 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
             }
         }
 
-        Main.getLogger().info("Cloning repository");
+        Main.getLogger().info("Cloning repository (this will take some time)");
         try
         {
             repository = Git.cloneRepository()
-                    .setURI(getConfig().getRepositoryUrl() != null ? getConfig().getRepositoryUrl() : "https://github.com/bluepilledgreat/Roblox-DeployHistory-Tracker.git")
+                    .setURI(getConfig().getRepositoryUrl() != null ? getConfig().getRepositoryUrl() : "https://github.com/SNCPlay42/roblox-api-dumps.git")
                     .setDirectory(folder)
                     .call();
 
@@ -73,7 +81,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
         {
             final List<RevCommit> commits = StreamSupport.stream(repository.log().call().spliterator(), false)
                     .sorted(Comparator.comparingInt(RevCommit::getCommitTime)).toList();
-            final Pattern pattern = Pattern.compile("([A-z0-9]+): (version-[A-z0-9]+) \\[([0-9.]+)]");
+            final Pattern pattern = Pattern.compile("^([A-z0-9-]+): (version-[A-z0-9]+)$");
 
             commits.forEach(commit ->
             {
@@ -87,22 +95,12 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                     return;
                 }
 
-                Arrays.stream(Objects.requireNonNull(folder.listFiles())).filter(file -> file.getName().endsWith(".txt")
-                        && getConfig().getChannels().contains(file.getName().toLowerCase().replace(".txt", ""))
-                        || getConfig().getChannels().contains("*")).toList().forEach(channel ->
+                final File versionFile = new File(folder, "info.txt");
+
+                if (versionFile.exists())
                 {
-                    final String name = channel.getName().toLowerCase().replace(".txt", "");
-
-                    if (!channels.containsKey(name))
+                    try (Scanner scanner = new Scanner(versionFile))
                     {
-                        channels.put(name, new ArrayList<>());
-                    }
-
-                    final List<RBXVersion> storage = channels.get(name);
-                    try
-                    {
-                        final Scanner scanner = new Scanner(channel);
-
                         while (scanner.hasNext())
                         {
                             final String line = scanner.nextLine();
@@ -112,27 +110,28 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                                 continue;
                             }
 
-                            final RBXVersion.VersionType type = RBXVersion.VersionType.find(matcher.group(1), getConfig().isMac(), false);
+                            final RBXVersion.VersionType type = RBXVersion.VersionType.find(matcher.group(1), false, false);
                             if (type == null)
                             {
                                 continue;
                             }
 
                             final String hash = matcher.group(2);
-                            final String version = matcher.group(3);
+                            final String version = "0, 0, 0, 0";
                             final long deployDate = ((long) commit.getCommitTime()) * 1000;
 
-                            if (storage.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
+                            if (found.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
                             {
-                                storage.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, name, new ArrayList<>(), type.isCjv()));
+                                Main.getLogger().info("Found one! {}", hash);
+                                found.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, "live", new ArrayList<>(), false));
                             }
                         }
                     }
                     catch (IOException ex)
                     {
-                        Main.getLogger().error("Failed to read channel {} in commit {}", name, commit.getName(), ex);
+                        Main.getLogger().error("Failed to get clients in commit {}", commit.getName(), ex);
                     }
-                });
+                }
             });
         }
         catch (GitAPIException ex)
@@ -144,18 +143,18 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
     @Override
     public List<RBXVersion> getVersions(String channel)
     {
-        if (repository == null)
+        if (repository == null || !channel.equalsIgnoreCase("live"))
         {
             return List.of();
         }
 
-        if (channels.isEmpty())
+        if (found.isEmpty())
         {
             getVersions();
-            cleanUp();
+            //cleanUp();
         }
 
-        return channels.getOrDefault(channel, List.of()).stream().filter(Objects::nonNull).toList();
+        return found.stream().filter(Objects::nonNull).sorted(Comparator.comparingLong(RBXVersion::getDeployDate)).toList();
     }
 
     public void cleanUp()

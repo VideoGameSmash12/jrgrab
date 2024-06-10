@@ -4,6 +4,7 @@ import me.videogamesm12.jrgrab.Main;
 import me.videogamesm12.jrgrab.data.JRGConfiguration;
 import me.videogamesm12.jrgrab.data.RBXVersion;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -52,9 +53,19 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
         try
         {
             repository = Git.cloneRepository()
-                    .setURI("https://github.com/MaximumADHD/Roblox-Client-Tracker.git")
+                    .setURI(getConfig().getRepositoryUrl() != null ? getConfig().getRepositoryUrl() : "https://github.com/MaximumADHD/Roblox-Client-Tracker.git")
                     .setDirectory(folder)
                     .call();
+
+            if (getConfig().getBranch() != null)
+            {
+                repository.checkout()
+                        .setName(getConfig().getBranch())
+                        .setCreateBranch(true)
+                        .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+                        .setStartPoint("origin/" + getConfig().getBranch())
+                        .call();
+            }
         }
         catch (GitAPIException ex)
         {
@@ -87,6 +98,11 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
                 final String versionGuid;
                 final String version;
                 final long deployDate;
+
+                if (!versionFile.exists())
+                {
+                    return;
+                }
 
                 if (guidVersionFile.exists())
                 {

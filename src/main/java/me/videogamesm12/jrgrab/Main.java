@@ -42,6 +42,7 @@ public class Main
             case LEGACY -> new LegacyGrabber(configuration);
             case MANUAL -> new ManualGrabber(configuration);
             case MATT_GITHUB_TRACKER -> new MattGitHubTrackerGrabber(configuration);
+            case SNC_GITHUB_TRACKER -> new SNCGitHubTrackerGrabber(configuration);
         };
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())

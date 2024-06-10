@@ -117,6 +117,48 @@ public class RBXVersion
         }
         else
         {
+            if (!configuration.isFetchingManifestForFiles())
+            {
+                if (type.name().contains("STUDIO"))
+                {
+                    files.put("BuiltInPlugins.zip", null);
+                    files.put("BuiltInStandalone.zip", null);
+                    files.put("content-luapackages.zip", null);
+                    files.put("content-qt_translations.zip", null);
+                    files.put("content-translations.zip", null);
+                    files.put("content-scripts.zip", null);
+                    files.put("content-models.zip", null);
+                    files.put("LibrariesQt5.zip", null);
+                    files.put("Qml.zip", null);
+                    files.put("RobloxStudioLauncherBeta.exe", null);
+                    files.put("RobloxStudio.zip", null);
+                    files.put("ssl.zip", null);
+                    files.put("Plugins.zip", null);
+                }
+
+                files.put("content-avatar.zip", null);
+                files.put("content-fonts.zip", null);
+                files.put("content-music.zip", null);
+                files.put("content-platform-fonts.zip", null);
+                files.put("content-terrain.zip", null);
+                files.put("content-particles.zip", null);
+                files.put("content-sky.zip", null);
+                files.put("content-sounds.zip", null);
+                files.put("content-textures.zip", null);
+                files.put("content-textures2.zip", null);
+                files.put("content-textures3.zip", null);
+                files.put("Libraries.zip", null);
+                files.put("NPRobloxProxy.zip", null);
+                files.put("redist.zip", null);
+                files.put("Roblox.exe", null);
+                files.put("RobloxApp.zip", null);
+                files.put("RobloxProxy.zip", null);
+                files.put("shaders.zip", null);
+
+                available = true;
+                return;
+            }
+
             try
             {
                 final Pattern filePattern = Pattern.compile("^([A-z0-9-]+\\.[A-z0-9]+)");
@@ -227,8 +269,8 @@ public class RBXVersion
         MAC_PLAYER("Client", "MacPlayer", new String[]{"Client", "MacPlayer"}, true, false),
         MAC_STUDIO("Studio", "MacStudio", new String[]{"Studio", "MacStudio"}, true, false),
         MAC_STUDIO_CJV("Studio", "MacStudio", new String[]{"MacStudioCJV"}, true, false),
-        WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer"}, false,false),
-        WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "Studio"}, false, false),
+        WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer", "SetupVersion"}, false,false),
+        WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "Studio", "Studio-SetupVersion"}, false, false),
         WINDOWS_STUDIO_CJV_X86("Studio", "WindowsStudio", new String[]{"WindowsStudioCJV"}, false, true),
         WINDOWS_STUDIO_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64", "Studio64"}, false, false),
         WINDOWS_STUDIO_CJV_X64("Studio64", "WindowsStudio64", new String[]{"WindowsStudio64CJV"}, false, true);
