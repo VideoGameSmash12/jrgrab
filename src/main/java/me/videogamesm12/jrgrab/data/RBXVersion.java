@@ -49,7 +49,7 @@ public class RBXVersion
                     + (!channel.equalsIgnoreCase("live") ? "channel/" + channel + "/" : "")
                     + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
                     + getVersionHash() + "-" + (type.isMac() ?
-                    (type == RBXVersion.VersionType.MAC_STUDIO ? "RobloxStudioVersion.txt" : "RobloxVersion.txt") : "rbxPkgManifest.txt")).statusCode() != 403;
+                    (type == RBXVersion.VersionType.MAC_STUDIO || type == VersionType.MAC_STUDIO_CJV ? "RobloxStudio.dmg" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
         }
         catch (IOException | InterruptedException ex)
         {
@@ -193,6 +193,15 @@ public class RBXVersion
                 files.put("rbxPkgManifest.txt", "");
                 files.put("rbxManifest.txt", "");
 
+                if (type.name().contains("STUDIO"))
+                {
+                    files.put("RobloxStudioLauncherBeta.exe", "");
+                }
+                else
+                {
+                    files.put("RobloxPlayerLauncher.exe", "");
+                }
+
                 available = true;
             }
             catch (IOException | InterruptedException ex)
@@ -271,7 +280,7 @@ public class RBXVersion
     {
         MAC_PLAYER("Client", "MacPlayer", new String[]{"Client", "MacPlayer"}, true, false),
         MAC_STUDIO("Studio", "MacStudio", new String[]{"Studio", "MacStudio"}, true, false),
-        MAC_STUDIO_CJV("Studio", "MacStudio", new String[]{"MacStudioCJV"}, true, false),
+        MAC_STUDIO_CJV("Studio", "MacStudioCJV", new String[]{"Studio", "MacStudioCJV"}, true, true),
         WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer", "SetupVersion"}, false,false),
         WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "Studio", "Studio-SetupVersion"}, false, false),
         WINDOWS_STUDIO_CJV_X86("Studio", "WindowsStudio", new String[]{"Studio", "WindowsStudioCJV"}, false, true),
