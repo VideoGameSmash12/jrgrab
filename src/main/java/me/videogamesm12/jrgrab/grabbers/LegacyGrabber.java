@@ -37,7 +37,7 @@ public class LegacyGrabber extends AbstractGrabber
                     (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel + "/");
 
             // Player
-            final HttpResponse<String> player = HttpUtil.getFull(prefix + (getConfig().isMac() ? "mac/" : "") + "version");
+            final HttpResponse<String> player = HttpUtil.getFull(prefix + (getConfig().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "") + "version");
 
             // Did we score a hit?
             if (player.statusCode() != 403)
@@ -60,7 +60,7 @@ public class LegacyGrabber extends AbstractGrabber
             }
 
             // Studio
-            final HttpResponse<String> studio = HttpUtil.getFull(prefix + (getConfig().isMac() ? "mac/versionStudio" : "versionQTStudio"));
+            final HttpResponse<String> studio = HttpUtil.getFull(prefix + (getConfig().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") + "versionStudio" : "versionQTStudio"));
 
             if (studio.statusCode() != 403)
             {

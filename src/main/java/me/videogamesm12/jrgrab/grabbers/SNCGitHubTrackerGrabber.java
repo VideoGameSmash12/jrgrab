@@ -10,10 +10,8 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -150,7 +148,7 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
         if (found.isEmpty())
         {
             getVersions();
-            //cleanUp();
+            cleanUp();
         }
 
         return found.stream().filter(Objects::nonNull).sorted(Comparator.comparingLong(RBXVersion::getDeployDate)).toList();

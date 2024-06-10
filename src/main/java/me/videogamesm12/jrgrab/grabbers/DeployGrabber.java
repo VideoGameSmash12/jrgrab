@@ -31,7 +31,7 @@ public class DeployGrabber extends AbstractGrabber
         {
             String[] lines = HttpUtil.get("https://" + getConfig().getDomain() + "/"
                     + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel.toLowerCase() + "/")
-                    + (getConfig().isMac() ? "mac/" : "")
+                    + (getConfig().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
                     + "DeployHistory.txt").split("\r\n");
 
             return Arrays.stream(lines).map(line ->
