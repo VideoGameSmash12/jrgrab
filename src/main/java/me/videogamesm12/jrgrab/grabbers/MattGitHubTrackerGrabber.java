@@ -65,6 +65,21 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                         .setStartPoint("origin/" + getConfig().getBranch())
                         .call();
             }
+
+            // Get ALL the channels
+            if (getConfig().getChannels().contains("*"))
+            {
+                List<String> channels = new ArrayList<>();
+
+                Arrays.stream(Objects.requireNonNull(folder.listFiles())).filter(file -> file.getName().endsWith(".txt")
+                        && getConfig().getChannels().contains(file.getName().toLowerCase().replace(".txt", ""))).toList().forEach(channel ->
+                {
+                    final String name = channel.getName().toLowerCase().replace(".txt", "");
+                    channels.add(name);
+                });
+
+                getConfig().setChannels(channels);
+            }
         }
         catch (GitAPIException ex)
         {
@@ -96,8 +111,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                 //  latest version hashes for Mac and Windows clients of their respective types along with their version
                 //  which is the same as what is reported by DeployHistory, but formatted differently.
                 Arrays.stream(Objects.requireNonNull(folder.listFiles())).filter(file -> file.getName().endsWith(".txt")
-                        && getConfig().getChannels().contains(file.getName().toLowerCase().replace(".txt", ""))
-                        || getConfig().getChannels().contains("*")).toList().forEach(channel ->
+                        && getConfig().getChannels().contains(file.getName().toLowerCase().replace(".txt", ""))).toList().forEach(channel ->
                 {
                     final String name = channel.getName().toLowerCase().replace(".txt", "");
 

@@ -5,6 +5,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import me.videogamesm12.jrgrab.Main;
 import org.eclipse.jgit.util.StringUtils;
 
@@ -25,6 +26,7 @@ public class JRGConfiguration
     private String branch = null;
 
     @Builder.Default
+    @Setter
     private List<String> channels = List.of("live");
 
     @Builder.Default
