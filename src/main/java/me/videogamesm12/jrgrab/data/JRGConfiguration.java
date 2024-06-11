@@ -30,6 +30,9 @@ public class JRGConfiguration
     private List<String> channels = List.of("live");
 
     @Builder.Default
+    private List<String> commonChannels = new ArrayList<>();
+
+    @Builder.Default
     private boolean mac = false;
 
     @Builder.Default
@@ -65,6 +68,7 @@ public class JRGConfiguration
         options.accepts("domain", "The domain to use when grabbing clients. Unless you're attempting to scrape something like LuoBu, there isn't a need to change this.").withRequiredArg().describedAs("URL");
         options.accepts("branch", "The branch to use if using a GitHub-based scraper. You shouldn't need to change this unless the repository you're scraping has other branches you want to dig through.").withRequiredArg().describedAs("branch name");
         options.accepts("repository-url", "The repository to use if using a GitHub-based scraper. You shouldn't need to change this unless you're scraping a fork of a supported tracker.").withRequiredArg().describedAs("URL");
+        options.accepts("common-channels", "The channels where \"common\" is used instead of the channel name to verify a client's availability and get its' files").withRequiredArg().describedAs("channel names separated by commas");
         options.accepts("channels", "The channels to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
         options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toLowerCase()).toList(), ", ", ", or "));
         options.accepts("source", "Where the application will fetch clients from. Defaults to deploy_history.").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toLowerCase()).toList(), ", ", ", or "));
@@ -102,6 +106,7 @@ public class JRGConfiguration
             if (set.has("branch")) configBuilder = configBuilder.branch((String) set.valueOf("branch"));
             if (set.has("repository-url")) configBuilder = configBuilder.repositoryUrl((String) set.valueOf("repository-url"));
             if (set.has("domain")) configBuilder = configBuilder.domain((String) set.valueOf("domain"));
+            if (set.has("common-channels")) configBuilder = configBuilder.commonChannels(Arrays.stream(((String) set.valueOf("common-channels")).split(",")).toList());
             if (set.has("channels")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channels")).split(",")).toList());
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));

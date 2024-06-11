@@ -46,7 +46,8 @@ public class RBXVersion
         {
             Main.getLogger().info("Verifying availability for version {}", getVersionHash());
             available = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
-                    + (!channel.equalsIgnoreCase("live") ? "channel/" + channel + "/" : "")
+                    + (!channel.equalsIgnoreCase("live") ? "channel/" +
+                    (configuration.getCommonChannels().contains(channel) ? "common" : channel) + "/" : "")
                     + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
                     + getVersionHash() + "-" + (type.isMac() ?
                     (type == RBXVersion.VersionType.MAC_STUDIO || type == VersionType.MAC_STUDIO_CJV ? "RobloxStudio.dmg" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
@@ -168,7 +169,8 @@ public class RBXVersion
                 String hash = null;
 
                 final String request = HttpUtil.get("https://" + configuration.getDomain() + "/"
-                                + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel + "/")
+                                + (channel.equalsIgnoreCase("live") ? "" : "channel/" +
+                        (configuration.getCommonChannels().contains(channel) ? "common" : channel) + "/")
                                 + (isCjv() ? "cjv/" : "") + getVersionHash() + "-rbxPkgManifest.txt");
 
                 if (request.contains("AccessDenied"))

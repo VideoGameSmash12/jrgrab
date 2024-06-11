@@ -71,8 +71,8 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
             {
                 List<String> channels = new ArrayList<>();
 
-                Arrays.stream(Objects.requireNonNull(folder.listFiles())).filter(file -> file.getName().endsWith(".txt")
-                        && getConfig().getChannels().contains(file.getName().toLowerCase().replace(".txt", ""))).toList().forEach(channel ->
+                Arrays.stream(Objects.requireNonNull(folder.listFiles())).filter(file -> file.getName().endsWith(".txt"))
+                        .toList().forEach(channel ->
                 {
                     final String name = channel.getName().toLowerCase().replace(".txt", "");
                     channels.add(name);
