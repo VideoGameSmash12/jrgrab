@@ -51,11 +51,45 @@ public class RBXVersion
                     + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
                     + getVersionHash() + "-" + (type.isMac() ?
                     (type == RBXVersion.VersionType.MAC_STUDIO || type == VersionType.MAC_STUDIO_CJV ? "RobloxStudio.dmg" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
+
+            if (configuration.isDetectCommonChannels())
+            {
+                // Try again, but as a common channel
+                if (!available && !configuration.getCommonChannels().contains(channel) && !channel.equalsIgnoreCase("live"))
+                {
+                    Main.getLogger().info("Version {} returned 403 through traditional means, trying again but with the common channel", getVersionHash());
+                    try
+                    {
+                        available = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
+                                + "channel/common/"
+                                + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
+                                + getVersionHash() + "-" + (type.isMac() ?
+                                (type == RBXVersion.VersionType.MAC_STUDIO || type == VersionType.MAC_STUDIO_CJV ? "RobloxStudio.dmg" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
+                    }
+                    catch (IOException | InterruptedException ex)
+                    {
+                        if (configuration.isAssumeAvailableOnException())
+                        {
+                            available = true;
+                        }
+                        else
+                        {
+                            Main.getLogger().warn("Second attempt to verify availability as a common channel failed for version {}", getVersionHash(), ex);
+                        }
+                    }
+
+                    // Channel uses "common" branch for its data, so we'll mark it as such.
+                    if (available)
+                    {
+                        configuration.getCommonChannels().add(channel);
+                    }
+                }
+            }
         }
         catch (IOException | InterruptedException ex)
         {
             Main.getLogger().warn("Failed to verify availability for version {} in channel {}", getVersionHash(), channel, ex);
-            available = false;
+            available = configuration.isAssumeAvailableOnException();
         }
     }
 

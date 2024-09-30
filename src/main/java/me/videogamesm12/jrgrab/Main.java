@@ -6,10 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import me.videogamesm12.jrgrab.data.JRGConfiguration;
 import me.videogamesm12.jrgrab.data.RBXVersion;
-import me.videogamesm12.jrgrab.destinations.AbstractDestination;
-import me.videogamesm12.jrgrab.destinations.Aria2Destination;
-import me.videogamesm12.jrgrab.destinations.DeployHistoryDestination;
-import me.videogamesm12.jrgrab.destinations.JsonDestination;
+import me.videogamesm12.jrgrab.destinations.*;
 import me.videogamesm12.jrgrab.grabbers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +71,7 @@ public class Main
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())
         {
+            case OPTIMIZED_ARIA2C -> new OptimizedAria2Destination(configuration);
             case ARIA2C -> new Aria2Destination(configuration);
             case DEPLOY_HISTORY -> new DeployHistoryDestination(configuration);
             case JSON -> new JsonDestination(configuration);

@@ -132,7 +132,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                                 continue;
                             }
 
-                            final RBXVersion.VersionType type = RBXVersion.VersionType.find(matcher.group(1), getConfig().isMac(), false);
+                            final RBXVersion.VersionType type = RBXVersion.VersionType.find(matcher.group(1), getConfig().isMac(), getConfig().isCjv());
                             if (type == null)
                             {
                                 continue;
@@ -142,7 +142,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
                             final String version = matcher.group(3);
                             final long deployDate = ((long) commit.getCommitTime()) * 1000;
 
-                            if (storage.stream().noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
+                            if (storage.stream().filter(Objects::nonNull).noneMatch(client -> client.getVersionHash().equalsIgnoreCase(hash)))
                             {
                                 storage.add(RBXVersion.fromClientSettings(type, hash, deployDate, version, name, known, type.isCjv()));
                             }

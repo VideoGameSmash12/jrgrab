@@ -47,7 +47,8 @@ public class Aria2Destination extends AbstractDestination
                     params.add("token:" + getConfig().getAria2().getToken());
                     final JsonArray links = new JsonArray();
                     links.add("https://" + getConfig().getDomain() + "/"
-                            + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/" + client.getChannel() + "/")
+                            + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
+                            + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
                             + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
                             + (client.isCjv() ? "cjv/" : "") + client.getVersionHash() + "-" + file);
                     params.add(links);

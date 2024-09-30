@@ -56,6 +56,12 @@ public class JRGConfiguration
     private boolean incremental = false;
 
     @Builder.Default
+    private boolean assumeAvailableOnException = false;
+
+    @Builder.Default
+    private boolean detectCommonChannels = false;
+
+    @Builder.Default
     private Aria2Configuration aria2 = Aria2Configuration.builder().build();
 
     @Builder.Default
@@ -78,6 +84,8 @@ public class JRGConfiguration
         options.accepts("bruteforce-files", "When fetching client files, use a hardcoded list of files instead of trying to find them from package manifests. Use in conjunction with --include-unavailable to bypass any other checks that may prevent them from being downloaded");
         options.accepts("clients", "Manually grab these specified clients if you use the \"manual\" source.").withRequiredArg().describedAs("[channel@]version-hash");
         options.accepts("include-unavailable", "Include clients that aren't available when sending them to the chosen destination.");
+        options.accepts("assume-available-on-exception", "If an unexpected error occurs during availability checks, assume that the client is available and mark it as such.");
+        options.accepts("detect-common-channels", "If the version availability check fails, check again with the common channel.");
         options.accepts("aria2-ip", "If using the \"aria2c\" destination, this sets the IP address for the daemon.").withRequiredArg();
         options.accepts("aria2-port", "If using the \"aria2c\" destination, this sets the port for the daemon.").withRequiredArg().ofType(int.class);
         options.accepts("aria2-token", "If using the \"aria2c\" destination, this sets the authentication token for the daemon (if one is present).").withRequiredArg();
@@ -115,6 +123,8 @@ public class JRGConfiguration
             if (set.has("mac-arm64")) configBuilder = configBuilder.arm64(true);
             if (set.has("bruteforce-files")) configBuilder = configBuilder.fetchingManifestForFiles(false);
             if (set.has("include-unavailable")) configBuilder = configBuilder.includingUnavailable(true);
+            if (set.has("assume-available-on-exception")) configBuilder = configBuilder.assumeAvailableOnException(true);
+            if (set.has("detect-common-channels")) configBuilder = configBuilder.detectCommonChannels(true);
             if (set.has("incremental")) configBuilder = configBuilder.incremental(true);
             if (set.has("clients")) configBuilder = configBuilder.manuallySpecifiedClients(Arrays.stream(((String) set.valueOf("clients")).split(",")).filter(str -> !str.isBlank() && !str.isEmpty()).toList());
             if (configBuilder.destination == Destination.ARIA2C)
@@ -169,6 +179,7 @@ public class JRGConfiguration
 
     public enum Destination
     {
+        OPTIMIZED_ARIA2C,
         ARIA2C,
         DEPLOY_HISTORY,
         JSON

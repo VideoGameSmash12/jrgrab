@@ -24,13 +24,12 @@ public class JsonDestination extends AbstractDestination
     {
         versions.parallelStream().forEach(version -> version.fetchFiles(getConfig()));
 
-        try
+        Main.getLogger().info("Dumping JSON-formatted versions to disk");
+
+        try (FileWriter writer = new FileWriter("versions." + channel + (getConfig().isMac() ? ".mac"
+                + (getConfig().isArm64() ? ".arm64" : "") : "") + (getConfig().isCjv() ? ".cjv" : "") + ".json"))
         {
-            Main.getLogger().info("Dumping JSON-formatted versions to disk");
-            FileWriter writer = new FileWriter("versions." + channel + (getConfig().isMac() ? ".mac"
-                    + (getConfig().isArm64() ? ".arm64" : "") : "") + (getConfig().isCjv() ? ".cjv" : "") + ".json");
             gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
-            writer.close();
         }
         catch (IOException ex)
         {
