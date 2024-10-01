@@ -25,21 +25,16 @@ public class FileListDestination extends AbstractDestination
     {
         versions.parallelStream().forEach(version -> version.fetchFiles(getConfig()));
 
-        final StringBuilder fileList = new StringBuilder();
-        versions.forEach(version -> version.getFiles().keySet().forEach(file ->
-        {
-            fileList.append(file);
-            fileList.append("\n");
-        }));
-
-
+        Main.getLogger().info("Writing file list to disk");
         try (FileWriter writer = new FileWriter("files." + channel + (getConfig().isMac() ? ".mac"
                 + (getConfig().isArm64() ? ".arm64" : "") : "") + (getConfig().isCjv() ? ".cjv" : "") + ".txt"))
         {
-            writer.write(fileList.toString());
+            writer.write(String.join("\r\n", versions.stream().map(version -> String.join("\r\n",
+                    version.getFiles().keySet())).toList()));
         }
         catch (IOException e)
         {
+            Main.getLogger().error("Failed to write file list to disk");
         }
     }
 }

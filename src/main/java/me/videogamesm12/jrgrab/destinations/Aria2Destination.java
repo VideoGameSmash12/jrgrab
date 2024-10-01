@@ -38,33 +38,19 @@ public class Aria2Destination extends AbstractDestination
             {
                 client.getFiles().keySet().forEach(file ->
                 {
-                    // Create an aria2c request
-                    final JsonObject object = new JsonObject();
-                    object.addProperty("jsonrpc", "2.0");
-                    object.addProperty("method", "aria2.addUri");
-
-                    final JsonArray params = new JsonArray();
-                    params.add("token:" + getConfig().getAria2().getToken());
-                    final JsonArray links = new JsonArray();
-                    links.add("https://" + getConfig().getDomain() + "/"
-                            + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
-                            + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
-                            + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
-                            + (client.isCjv() ? "cjv/" : "") + client.getVersionHash() + "-" + file);
-                    params.add(links);
-                    final JsonObject output = new JsonObject();
-                    output.addProperty("out", client.getChannel() + "/"
-                            + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
-                            + (client.isCjv() ? "cjv/" : "")
-                            + client.getVersionHash() + "/"
-                            + client.getVersionHash() + "-" + file);
-                    params.add(output);
-                    object.add("params", params);
-                    object.addProperty("id", Instant.now().toEpochMilli());
-
                     try
                     {
-                        HttpUtil.post("http://" + getConfig().getAria2().getIpAddress() + ":" + getConfig().getAria2().getPort() + "/jsonrpc", gson.toJson(object));
+                        HttpUtil.post("http://" + getConfig().getAria2().getIpAddress() + ":" + getConfig().getAria2().getPort() + "/jsonrpc",
+                                gson.toJson(createAria2Request("https://" + getConfig().getDomain() + "/"
+                                        + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
+                                        + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
+                                        + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
+                                        + (client.isCjv() ? "cjv/" : "") + client.getVersionHash() + "-" + file,
+                                        client.getChannel() + "/"
+                                        + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
+                                        + (client.isCjv() ? "cjv/" : "")
+                                        + client.getVersionHash() + "/"
+                                        + client.getVersionHash() + "-" + file)));
                     }
                     catch (IOException | InterruptedException ex)
                     {
@@ -77,5 +63,25 @@ public class Aria2Destination extends AbstractDestination
                 Main.getLogger().error("WTF", ex);
             }
         });
+    }
+
+    public JsonObject createAria2Request(String url, String outputFile)
+    {
+        final JsonObject object = new JsonObject();
+        object.addProperty("jsonrpc", "2.0");
+        object.addProperty("method", "aria2.addUri");
+
+        final JsonArray params = new JsonArray();
+        params.add("token:" + getConfig().getAria2().getToken());
+        final JsonArray links = new JsonArray();
+        links.add(url);
+        params.add(links);
+        final JsonObject output = new JsonObject();
+        output.addProperty("out", outputFile);
+        params.add(output);
+        object.add("params", params);
+        object.addProperty("id", Instant.now().toEpochMilli());
+
+        return object;
     }
 }

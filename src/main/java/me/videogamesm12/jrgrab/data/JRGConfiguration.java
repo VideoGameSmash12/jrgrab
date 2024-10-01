@@ -179,6 +179,7 @@ public class JRGConfiguration
 
     public enum Destination
     {
+        FILE_LIST,
         OPTIMIZED_ARIA2C,
         ARIA2C,
         DEPLOY_HISTORY,

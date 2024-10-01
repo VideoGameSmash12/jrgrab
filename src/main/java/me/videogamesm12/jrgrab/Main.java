@@ -71,6 +71,7 @@ public class Main
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())
         {
+            case FILE_LIST -> new FileListDestination(configuration);
             case OPTIMIZED_ARIA2C -> new OptimizedAria2Destination(configuration);
             case ARIA2C -> new Aria2Destination(configuration);
             case DEPLOY_HISTORY -> new DeployHistoryDestination(configuration);

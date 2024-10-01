@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class OptimizedAria2Destination extends AbstractDestination
+public class OptimizedAria2Destination extends Aria2Destination
 {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final Map<String, JsonObject> fileMap = new HashMap<>();
@@ -124,29 +124,14 @@ public class OptimizedAria2Destination extends AbstractDestination
 
                     Main.getLogger().info("Queuing unique file {} with hash {} from version {}", file, hash, client.getVersionHash());
 
-                    // Create an aria2c request
-                    final JsonObject object = new JsonObject();
-                    object.addProperty("jsonrpc", "2.0");
-                    object.addProperty("method", "aria2.addUri");
-
-                    final JsonArray params = new JsonArray();
-                    params.add("token:" + getConfig().getAria2().getToken());
-                    final JsonArray links = new JsonArray();
-                    links.add("https://" + getConfig().getDomain() + "/"
-                            + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
-                            + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
-                            + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
-                            + (client.isCjv() ? "cjv/" : "") + client.getVersionHash() + "-" + file);
-                    params.add(links);
-                    final JsonObject output = new JsonObject();
-                    output.addProperty("out", hash);
-                    params.add(output);
-                    object.add("params", params);
-                    object.addProperty("id", Instant.now().toEpochMilli());
-
                     try
                     {
-                        HttpUtil.post("http://" + getConfig().getAria2().getIpAddress() + ":" + getConfig().getAria2().getPort() + "/jsonrpc", gson.toJson(object));
+                        HttpUtil.post("http://" + getConfig().getAria2().getIpAddress() + ":" + getConfig().getAria2().getPort() + "/jsonrpc",
+                                gson.toJson(createAria2Request("https://" + getConfig().getDomain() + "/"
+                                        + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
+                                        + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
+                                        + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
+                                        + (client.isCjv() ? "cjv/" : "") + client.getVersionHash() + "-" + file, hash)));
                         knownFileHashes.add(hash);
                     }
                     catch (IOException | InterruptedException ex)
