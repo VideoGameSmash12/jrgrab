@@ -76,6 +76,8 @@ public class Main
             case ARIA2C -> new Aria2Destination(configuration);
             case DEPLOY_HISTORY -> new DeployHistoryDestination(configuration);
             case JSON -> new JsonDestination(configuration);
+            case SPREADSHEET -> new SpreadsheetDestination(configuration);
+            case URL_LIST -> new UrlListDestination(configuration);
         };
 
         grabber.setup();
@@ -95,7 +97,7 @@ public class Main
                 k.addAll(clients.stream().map(RBXVersion::getVersionHash).toList());
             }
 
-            destination.sendVersions(clients, channel);
+            destination.sendVersions(clients,  channel);
         });
 
         if (configuration.isIncremental())

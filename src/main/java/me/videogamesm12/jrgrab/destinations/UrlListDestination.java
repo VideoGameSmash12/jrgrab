@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileListDestination extends AbstractDestination
+public class UrlListDestination extends AbstractDestination
 {
-    public FileListDestination(JRGConfiguration config)
+    public UrlListDestination(JRGConfiguration config)
     {
         super(config);
 
@@ -26,12 +26,16 @@ public class FileListDestination extends AbstractDestination
     {
         versions.parallelStream().forEach(version -> version.fetchFiles(getConfig()));
 
-        Main.getLogger().info("Writing file list to disk");
-        try (FileWriter writer = new FileWriter("files." + channel + (getConfig().isMac() ? ".mac"
+        Main.getLogger().info("Writing URL list to disk");
+        try (FileWriter writer = new FileWriter("urls." + channel + (getConfig().isMac() ? ".mac"
                 + (getConfig().isArm64() ? ".arm64" : "") : "") + (getConfig().isCjv() ? ".cjv" : "") + ".txt"))
         {
             List<String> files = new ArrayList<>();
-            versions.forEach(version -> version.getFiles().keySet().forEach(file -> files.add(version.getVersionHash() + "-" + file)));
+            versions.forEach(version -> version.getFiles().keySet().forEach(file -> files.add("https://" + getConfig().getDomain() + "/"
+                    + (version.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
+                    + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
+                    + (version.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
+                    + (version.isCjv() ? "cjv/" : "") + version.getVersionHash() + "-" + file)));
             writer.write(String.join("\r\n", files));
         }
         catch (IOException e)

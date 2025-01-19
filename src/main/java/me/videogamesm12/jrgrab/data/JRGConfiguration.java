@@ -3,6 +3,7 @@ package me.videogamesm12.jrgrab.data;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,6 +68,9 @@ public class JRGConfiguration
     @Builder.Default
     private List<String> manuallySpecifiedClients = new ArrayList<>();
 
+    @Builder.Default
+    private String file = null;
+
     public static JRGConfiguration fromArguments(final String[] args)
     {
         final OptionParser options = new OptionParser();
@@ -90,6 +94,7 @@ public class JRGConfiguration
         options.accepts("aria2-port", "If using the \"aria2c\" destination, this sets the port for the daemon.").withRequiredArg().ofType(int.class);
         options.accepts("aria2-token", "If using the \"aria2c\" destination, this sets the authentication token for the daemon (if one is present).").withRequiredArg();
         options.accepts("incremental", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
+        options.accepts("file", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
 
         try
         {
@@ -117,7 +122,14 @@ public class JRGConfiguration
             if (set.has("common-channels")) configBuilder = configBuilder.commonChannels(Arrays.stream(((String) set.valueOf("common-channels")).split(",")).toList());
             if (set.has("channels")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channels")).split(",")).toList());
             configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
-            if (set.has("source")) configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
+            if (set.has("source"))
+            {
+                configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
+                if (configBuilder.source$value == Source.DEPLOY_HISTORY)
+                {
+                    configBuilder.file((String) set.valueOf("file"));
+                }
+            }
             if (set.has("cjv")) configBuilder = configBuilder.cjv(true);
             if (set.has("mac")) configBuilder = configBuilder.mac(true);
             if (set.has("mac-arm64")) configBuilder = configBuilder.arm64(true);
@@ -183,6 +195,8 @@ public class JRGConfiguration
         OPTIMIZED_ARIA2C,
         ARIA2C,
         DEPLOY_HISTORY,
-        JSON
+        JSON,
+        SPREADSHEET,
+        URL_LIST,
     }
 }

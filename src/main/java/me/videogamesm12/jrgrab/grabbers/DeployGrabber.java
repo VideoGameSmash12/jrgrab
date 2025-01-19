@@ -5,12 +5,11 @@ import me.videogamesm12.jrgrab.data.JRGConfiguration;
 import me.videogamesm12.jrgrab.data.RBXVersion;
 import me.videogamesm12.jrgrab.util.HttpUtil;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * <h1>DeployGrabber</h1>
@@ -35,10 +34,22 @@ public class DeployGrabber extends AbstractGrabber
     {
         try
         {
-            String[] lines = HttpUtil.get("https://" + getConfig().getDomain() + "/"
-                    + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel.toLowerCase() + "/")
-                    + (getConfig().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
-                    + "DeployHistory.txt").split("\r\n");
+            String[] lines;
+
+            if (getConfig().getFile() != null)
+            {
+                try (BufferedReader reader = new BufferedReader(new FileReader(getConfig().getFile())))
+                {
+                    lines = reader.lines().toArray(i -> new String[0]);
+                }
+            }
+            else
+            {
+                lines = HttpUtil.get("https://" + getConfig().getDomain() + "/"
+                        + (channel.equalsIgnoreCase("live") ? "" : "channel/" + channel.toLowerCase() + "/")
+                        + (getConfig().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
+                        + "DeployHistory.txt").split("\r\n");
+            }
 
             return Arrays.stream(lines).map(line ->
             {

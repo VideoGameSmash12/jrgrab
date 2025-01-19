@@ -95,7 +95,7 @@ public class RBXVersion
 
     public void fetchFiles(List<String> manifest)
     {
-        if (files.isEmpty())
+        if (!files.isEmpty())
         {
             return;
         }
