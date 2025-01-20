@@ -108,7 +108,7 @@ public class LegacyGrabber extends AbstractGrabber
                         deployDate = 0;
                     }
 
-                    versions.add(RBXVersion.fromClientSettings(RBXVersion.VersionType.WINDOWS_STUDIO_X86, hash, deployDate,
+                    versions.add(RBXVersion.fromClientSettings(RBXVersion.VersionType.WINDOWS_MFC_STUDIO, hash, deployDate,
                             "0, 0, 0, 0", channel, known, false));
                 }
             }
