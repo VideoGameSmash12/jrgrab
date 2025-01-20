@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Getter
 public class RBXVersion
 {
-    private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|Studio|Studio64|Client) (version-[A-Fa-f0-9]{16}) at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file vers?ion: ([0-9]+, ?[0-9]+, ?[0-9]+, ?[0-9]+))?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
+    private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|MFCStudio|Studio|Studio64|Client) (version-[A-Fa-f0-9]{16}) at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file vers?ion: ([0-9]+, ?[0-9]+, ?[0-9]+, ?[0-9]+))?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
     private static final DateFormat dateFormat = new SimpleDateFormat("M'/'d'/'yyyy h':'mm':'ss a");
     //--
     private transient final String fullVersionString;
@@ -317,6 +317,7 @@ public class RBXVersion
         MAC_PLAYER("Client", "MacPlayer", new String[]{"Client", "MacPlayer"}, true, false),
         MAC_STUDIO("Studio", "MacStudio", new String[]{"Studio", "MacStudio"}, true, false),
         MAC_STUDIO_CJV("Studio", "MacStudioCJV", new String[]{"Studio", "MacStudioCJV"}, true, true),
+        WINDOWS_MFC_STUDIO("MFCStudio", "MFCStudio", new String[]{"MFCStudio"}, false, false),
         WINDOWS_PLAYER("WindowsPlayer", "WindowsPlayer", new String[]{"Client", "WindowsPlayer", "SetupVersion"}, false,false),
         WINDOWS_STUDIO_X86("Studio", "WindowsStudio", new String[]{"WindowsStudio", "Studio", "Studio-SetupVersion"}, false, false),
         WINDOWS_STUDIO_CJV_X86("Studio", "WindowsStudio", new String[]{"Studio", "WindowsStudioCJV"}, false, true),
