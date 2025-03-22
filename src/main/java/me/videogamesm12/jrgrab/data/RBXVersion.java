@@ -11,6 +11,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,12 @@ public class RBXVersion
     private Map<String, String> files = new HashMap<>();
     @Builder.Default
     private Boolean available = null;
+
+    static
+    {
+        // Force UTC as DeployHistory is formatted to use that
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     public void verifyAvailability(JRGConfiguration configuration)
     {
@@ -271,6 +279,7 @@ public class RBXVersion
 
         try
         {
+
             time = dateFormat.parse(matcher.group(3)).getTime();
         }
         catch (NumberFormatException ex)
