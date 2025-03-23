@@ -78,6 +78,7 @@ public class Main
             case JSON -> new JsonDestination(configuration);
             case SPREADSHEET -> new SpreadsheetDestination(configuration);
             case URL_LIST -> new UrlListDestination(configuration);
+            case INTERNET_ARCHIVE -> new InternetArchiveDestination(configuration);
         };
 
         grabber.setup();

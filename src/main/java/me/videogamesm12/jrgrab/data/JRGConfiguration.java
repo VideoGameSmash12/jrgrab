@@ -66,6 +66,9 @@ public class JRGConfiguration
     private Aria2Configuration aria2 = Aria2Configuration.builder().build();
 
     @Builder.Default
+    private String iaToken = null;
+
+    @Builder.Default
     private List<String> manuallySpecifiedClients = new ArrayList<>();
 
     @Builder.Default
@@ -95,6 +98,7 @@ public class JRGConfiguration
         options.accepts("aria2-token", "If using the \"aria2c\" destination, this sets the authentication token for the daemon (if one is present).").withRequiredArg();
         options.accepts("incremental", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
         options.accepts("file", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
+        options.accepts("internet-archive-token", "If using the \"internet_archive\" destination, this sets the token for the account to use to upload the files.").withRequiredArg();
 
         try
         {
@@ -147,6 +151,13 @@ public class JRGConfiguration
                 if (set.has("aria2-token")) aria2ConfigBuilder = aria2ConfigBuilder.token((String) set.valueOf("aria2-token"));
                 configBuilder.aria2(aria2ConfigBuilder.build());
             }
+            else if (configBuilder.destination == Destination.INTERNET_ARCHIVE)
+            {
+                if (set.has("internet-archive-token"))
+                {
+                    configBuilder = configBuilder.iaToken((String) set.valueOf("internet-archive-token"));
+                }
+            }
 
             return configBuilder.build();
         }
@@ -198,5 +209,6 @@ public class JRGConfiguration
         JSON,
         SPREADSHEET,
         URL_LIST,
+        INTERNET_ARCHIVE,
     }
 }
