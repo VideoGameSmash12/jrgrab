@@ -12,8 +12,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +20,7 @@ import java.util.regex.Pattern;
 @Getter
 public class RBXVersion
 {
-    private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|MFCStudio|Studio|Studio64|Client) (version-[A-Fa-f0-9]{16}) at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file vers?ion: ([0-9]+, ?[0-9]+, ?[0-9]+, ?[0-9]+))?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
+    private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|MFCStudio|Studio|Studio64|Client) ([a-z0-9-]*) ?at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{3,4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file vers?ion: ([0-9]+, ?[0-9]+, ?[0-9]+, ?[0-9]+))?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
     private static final DateFormat dateFormat = new SimpleDateFormat("M'/'d'/'yyyy h':'mm':'ss a");
     //--
     private transient final String fullVersionString;
@@ -106,7 +104,7 @@ public class RBXVersion
         final Pattern hashPattern = Pattern.compile("^[a-z0-9]{32}$");
 
         String name = null;
-        String hash = null;
+        String hash;
 
         for (String line : manifest)
         {
@@ -144,7 +142,7 @@ public class RBXVersion
                     final HttpResponse<Void> launcherDetails = HttpUtil.head(getBaseUrl(configuration) + "-Roblox.dmg");
                     final HttpResponse<Void> details = HttpUtil.head(getBaseUrl(configuration) + "-RobloxPlayer.zip");
 
-                    if (launcherDetails.statusCode() == 403 || details.statusCode() == 403)
+                    if (details.statusCode() == 403)
                     {
                         available = false;
                         return;
@@ -228,7 +226,7 @@ public class RBXVersion
                 final Pattern hashPattern = Pattern.compile("^[a-z0-9]{32}$");
 
                 String name = null;
-                String hash = null;
+                String hash;
 
                 final String request = HttpUtil.get("https://" + configuration.getDomain() + "/"
                                 + (channel.equalsIgnoreCase("live") ? "" : "channel/" +
