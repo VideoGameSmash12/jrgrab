@@ -7,6 +7,7 @@ import me.videogamesm12.jrgrab.Main;
 import me.videogamesm12.jrgrab.util.HttpUtil;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,11 +54,7 @@ public class RBXVersion
         try
         {
             Main.getLogger().info("Verifying availability for version {}", getVersionHash());
-            available = HttpUtil.head("https://" + configuration.getDomain() + "/"
-                    + (!channel.equalsIgnoreCase("live") ? "channel/" +
-                    (configuration.getCommonChannels().contains(channel) ? "common" : channel) + "/" : "")
-                    + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
-                    + getVersionHash() + "-" + (type.isMac() ?
+            available = HttpUtil.head(getBaseUrl(configuration) + "-" + (type.isMac() ?
                     (type == RBXVersion.VersionType.MAC_STUDIO || type == VersionType.MAC_STUDIO_CJV ? "RobloxStudio.dmg" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
 
             if (configuration.isDetectCommonChannels())
@@ -68,10 +65,7 @@ public class RBXVersion
                     Main.getLogger().info("Version {} returned 403 through traditional means, trying again but with the common channel", getVersionHash());
                     try
                     {
-                        available = HttpUtil.head("https://" + configuration.getDomain() + "/"
-                                + "channel/common/"
-                                + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
-                                + getVersionHash() + "-" + (type.isMac() ?
+                        available = HttpUtil.head(getBaseUrl(configuration) + "-" + (type.isMac() ?
                                 (type == RBXVersion.VersionType.MAC_STUDIO || type == VersionType.MAC_STUDIO_CJV ? "RobloxStudio.dmg" : "Roblox.dmg") : "rbxPkgManifest.txt")).statusCode() != 403;
                     }
                     catch (IOException | InterruptedException ex)
@@ -140,23 +134,49 @@ public class RBXVersion
 
         /* Mac clients are stored differently compared to Windows clients. Instead of things like content being split up
            into their own ZIP files, everything is stored in a single ZIP file which makes archiving them easier. The
-           downside is that there isn't a quick and efficient way to get files and their hashes, so we end up having to
-           download massive ZIP files every single time. */
+           downside is that there isn't a quick and efficient way to figure out what files changed. */
         if (type.isMac())
         {
-            if (type == VersionType.MAC_PLAYER)
+            try
             {
-                files.put("Roblox.dmg", "");
-                files.put("RobloxPlayer.zip", "");
-            }
-            else
-            {
-                files.put("RobloxStudioApp.zip", "");
-                files.put("RobloxStudio.zip", "");
-                files.put("RobloxStudio.dmg", "");
-            }
+                if (type == VersionType.MAC_PLAYER)
+                {
+                    final HttpResponse<Void> launcherDetails = HttpUtil.head(getBaseUrl(configuration) + "-Roblox.dmg");
+                    final HttpResponse<Void> details = HttpUtil.head(getBaseUrl(configuration) + "-RobloxPlayer.zip");
 
-            verifyAvailability(configuration);
+                    if (launcherDetails.statusCode() == 403 || details.statusCode() == 403)
+                    {
+                        available = false;
+                        return;
+                    }
+
+                    files.put("Roblox.dmg", launcherDetails.headers().firstValue("etag").orElse("").replaceAll("\"", ""));
+                    files.put("RobloxPlayer.zip", details.headers().firstValue("etag").orElse("").replaceAll("\"", "").replaceAll("\"", ""));
+                }
+                else
+                {
+                    final HttpResponse<Void> launcherDetails = HttpUtil.head(getBaseUrl(configuration) + "-RobloxStudio.dmg");
+                    final HttpResponse<Void> launcher2Details = HttpUtil.head(getBaseUrl(configuration) + "-RobloxStudio.zip");
+                    final HttpResponse<Void> details = HttpUtil.head(getBaseUrl(configuration) + "-RobloxStudioApp.zip");
+
+                    if (launcherDetails.statusCode() == 403 || details.statusCode() == 403)
+                    {
+                        available = false;
+                        return;
+                    }
+
+                    files.put("RobloxStudio.dmg", launcherDetails.headers().firstValue("etag").orElse("").replaceAll("\"", ""));
+                    files.put("RobloxStudio.zip", launcher2Details.headers().firstValue("etag").orElse("").replaceAll("\"", ""));
+                    files.put("RobloxStudioApp.zip", details.headers().firstValue("etag").orElse("").replaceAll("\"", ""));
+                }
+
+                available = true;
+            }
+            catch (IOException | InterruptedException ex)
+            {
+                Main.getLogger().error("Failed to get hashes for {}'s files", getVersionHash(), ex);
+                available = configuration.isAssumeAvailableOnException();
+            }
         }
         else
         {
@@ -251,7 +271,7 @@ public class RBXVersion
             catch (IOException | InterruptedException ex)
             {
                 Main.getLogger().warn("Failed to get manifest for version {} in channel {}", getVersionHash(), channel, ex);
-                available = false;
+                available = configuration.isAssumeAvailableOnException();
             }
         }
     }
@@ -265,6 +285,15 @@ public class RBXVersion
         }
 
         return String.format("New %s %s at %s, file version: %s....Done!", type.getFriendlyName(), getVersionHash(), dateFormat.format(new Date(getDeployDate())), getFileVersion());
+    }
+
+    private String getBaseUrl(JRGConfiguration config)
+    {
+        return "https://" + config.getDomain() + "/"
+                + (!channel.equalsIgnoreCase("live") ? "channel/" +
+                (config.getCommonChannels().contains(channel) ? "common" : channel) + "/" : "")
+                + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
+                + getVersionHash();
     }
 
     public static RBXVersion fromString(String str, String channel, List<String> blacklist, boolean mac, boolean cjv) throws ParseException
