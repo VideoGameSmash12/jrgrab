@@ -35,7 +35,7 @@ public class DeployGrabber extends AbstractGrabber
             {
                 try (BufferedReader reader = new BufferedReader(new FileReader(getConfig().getFile())))
                 {
-                    lines = reader.lines().toArray(i -> new String[0]);
+                    lines = reader.lines().toArray(String[]::new);
                 }
             }
             else

@@ -93,7 +93,7 @@ public class JRGConfiguration
         options.accepts("aria2-port", "If using the \"aria2c\" destination, this sets the port for the daemon.").withRequiredArg().ofType(int.class);
         options.accepts("aria2-token", "If using the \"aria2c\" destination, this sets the authentication token for the daemon (if one is present).").withRequiredArg();
         options.accepts("incremental", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
-        options.accepts("file", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.");
+        options.accepts("file", "Marks clients grabbed during this session as ones that shouldn't be grabbed in the future.").withRequiredArg();
 
         try
         {
