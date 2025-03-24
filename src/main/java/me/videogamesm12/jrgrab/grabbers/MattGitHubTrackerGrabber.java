@@ -30,7 +30,7 @@ public class MattGitHubTrackerGrabber extends AbstractGrabber
 
     public MattGitHubTrackerGrabber(JRGConfiguration config)
     {
-        super(config, false);
+        super(config, true);
     }
 
     @Override

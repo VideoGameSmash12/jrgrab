@@ -38,11 +38,6 @@ public class ClonetrooperGitHubTrackerGrabber extends AbstractGrabber
     public void setup()
     {
         // Sanity checks
-        if (getConfig().isMac())
-        {
-            throw new IllegalArgumentException("Mac clients cannot be scraped using this grabber");
-        }
-
         if (folder.isDirectory())
         {
             try

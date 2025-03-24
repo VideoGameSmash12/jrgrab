@@ -7,12 +7,23 @@ import me.videogamesm12.jrgrab.data.RBXVersion;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Getter
 public abstract class AbstractGrabber
 {
     private final JRGConfiguration config;
-    private final boolean parallelSupported;
+    private final boolean macSupported;
+
+    public AbstractGrabber(JRGConfiguration configuration, boolean macSupported)
+    {
+        // Sanity checks are performed here now.
+        if (!macSupported && configuration.isMac())
+        {
+            throw new IllegalArgumentException("Mac clients cannot be scraped using this grabber");
+        }
+
+        this.config = configuration;
+        this.macSupported = macSupported;
+    }
 
     public void setup()
     {

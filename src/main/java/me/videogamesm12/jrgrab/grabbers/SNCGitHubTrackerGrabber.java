@@ -36,12 +36,6 @@ public class SNCGitHubTrackerGrabber extends AbstractGrabber
     @Override
     public void setup()
     {
-        // Sanity checks
-        if (getConfig().isMac())
-        {
-            throw new IllegalArgumentException("Mac clients cannot be scraped using this grabber");
-        }
-
         if (folder.isDirectory())
         {
             try
