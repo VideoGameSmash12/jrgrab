@@ -1,12 +1,17 @@
 package me.videogamesm12.jrgrab.util;
 
 import lombok.Getter;
+import me.videogamesm12.jrgrab.Main;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -62,5 +67,24 @@ public class HttpUtil
     public static HttpResponse<Void> head(String url) throws IOException, InterruptedException
 	{
         return httpClient.send(HttpRequest.newBuilder(URI.create(url)).method("HEAD", HttpRequest.BodyPublishers.noBody()).build(), HttpResponse.BodyHandlers.discarding());
+    }
+
+    /**
+     * Downloads a file from a given URL and returns the amount of bytes downloaded
+     * @param url           A URL to a given resource
+     * @param destination   Path
+     * @return              The amount of bytes downloaded, or 0 if an error occurred
+     */
+    public static long downloadFile(String url, Path destination)
+    {
+        try
+        {
+            return Files.copy(new BufferedInputStream(new URL(url).openStream()), destination);
+        }
+        catch (IOException e)
+        {
+            Main.getLogger().error("Fuck!", e);
+            return 0;
+        }
     }
 }

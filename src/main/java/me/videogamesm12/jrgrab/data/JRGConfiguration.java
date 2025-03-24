@@ -44,7 +44,8 @@ public class JRGConfiguration
     @Builder.Default
     private boolean fetchingManifestForFiles = true;
 
-    private Destination destination;
+    @Builder.Default
+    private Destination destination = Destination.DOWNLOAD;
 
     @Builder.Default
     private Source source = Source.DEPLOY_HISTORY;
@@ -79,8 +80,8 @@ public class JRGConfiguration
         options.accepts("repository-url", "The repository to use if using a GitHub-based scraper. You shouldn't need to change this unless you're scraping a fork of a supported tracker.").withRequiredArg().describedAs("URL");
         options.accepts("common-channels", "The channels where \"common\" is used instead of the channel name to verify a client's availability and get its' files").withRequiredArg().describedAs("channel names separated by commas");
         options.accepts("channels", "The channels to grab clients from").withRequiredArg().describedAs("channel names separated by commas");
-        options.accepts("destination", "Where the application will send all of its data to. Required.").requiredUnless("help").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toLowerCase()).toList(), ", ", ", or "));
-        options.accepts("source", "Where the application will fetch clients from. Defaults to deploy_history.").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toLowerCase()).toList(), ", ", ", or "));
+        options.accepts("destination", "Where the application will send all of its data to. Defaults to \"DOWNLOAD\".").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Destination.values()).map(d -> d.name().toUpperCase()).toList(), ", ", ", or "));
+        options.accepts("source", "Where the application will fetch clients from. Defaults to \"DEPLOY_HISTORY\".").withRequiredArg().describedAs(StringUtils.join(Arrays.stream(Source.values()).map(s -> s.name().toUpperCase()).toList(), ", ", ", or "));
         options.accepts("cjv", "Grab CJV clients.");
         options.accepts("mac", "Grab Mac clients.");
         options.accepts("mac-arm64", "If grabbing Mac clients, only grab arm64-based clients").availableIf("mac");
@@ -99,7 +100,7 @@ public class JRGConfiguration
         {
             final OptionSet set = options.parse(args);
 
-            if (set.has("help"))
+            if (set.has("help") || !set.hasOptions())
             {
                 try
                 {
@@ -120,7 +121,7 @@ public class JRGConfiguration
             if (set.has("domain")) configBuilder = configBuilder.domain((String) set.valueOf("domain"));
             if (set.has("common-channels")) configBuilder = configBuilder.commonChannels(Arrays.stream(((String) set.valueOf("common-channels")).split(",")).toList());
             if (set.has("channels")) configBuilder = configBuilder.channels(Arrays.stream(((String) set.valueOf("channels")).split(",")).toList());
-            configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
+            if (set.has("destination")) configBuilder = configBuilder.destination(Destination.valueOf(((String) set.valueOf("destination")).toUpperCase()));
             if (set.has("source"))
             {
                 configBuilder = configBuilder.source(Source.valueOf(((String) set.valueOf("source")).toUpperCase()));
@@ -138,7 +139,7 @@ public class JRGConfiguration
             if (set.has("detect-common-channels")) configBuilder = configBuilder.detectCommonChannels(true);
             if (set.has("incremental")) configBuilder = configBuilder.incremental(true);
             if (set.has("clients")) configBuilder = configBuilder.manuallySpecifiedClients(Arrays.stream(((String) set.valueOf("clients")).split(",")).filter(str -> !str.isBlank() && !str.isEmpty()).toList());
-            if (configBuilder.destination == Destination.ARIA2C)
+            if (configBuilder.destination$value == Destination.ARIA2C)
             {
                 Aria2Configuration.Aria2ConfigurationBuilder aria2ConfigBuilder = Aria2Configuration.builder();
                 if (set.has("aria2-ip")) aria2ConfigBuilder = aria2ConfigBuilder.ipAddress((String) set.valueOf("aria2-ip"));
@@ -197,5 +198,7 @@ public class JRGConfiguration
         JSON,
         SPREADSHEET,
         URL_LIST,
+        OPTIMIZED_DOWNLOAD,
+        DOWNLOAD,
     }
 }

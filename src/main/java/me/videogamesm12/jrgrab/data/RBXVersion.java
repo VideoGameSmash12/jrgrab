@@ -228,18 +228,18 @@ public class RBXVersion
                 String name = null;
                 String hash;
 
-                final String request = HttpUtil.get("https://" + configuration.getDomain() + "/"
+                final HttpResponse<String> request = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
                                 + (channel.equalsIgnoreCase("live") ? "" : "channel/" +
                         (configuration.getCommonChannels().contains(channel) ? "common" : channel) + "/")
                                 + (isCjv() ? "cjv/" : "") + getVersionHash() + "-rbxPkgManifest.txt");
 
-                if (request.contains("AccessDenied"))
+                if (request.statusCode() == 403)
                 {
                     available = false;
                     return;
                 }
 
-                for (String line : request.split("\r\n"))
+                for (String line : request.body().split("\r\n"))
                 {
                     if (filePattern.matcher(line).find())
                     {
@@ -252,7 +252,7 @@ public class RBXVersion
                     }
                 }
 
-                files.put("rbxPkgManifest.txt", "");
+                files.put("rbxPkgManifest.txt", request.headers().firstValue("etag").orElse("").replaceAll("\"", ""));
                 files.put("rbxManifest.txt", "");
 
                 if (type.name().contains("STUDIO"))
@@ -285,7 +285,7 @@ public class RBXVersion
         return String.format("New %s %s at %s, file version: %s....Done!", type.getFriendlyName(), getVersionHash(), dateFormat.format(new Date(getDeployDate())), getFileVersion());
     }
 
-    private String getBaseUrl(JRGConfiguration config)
+    public String getBaseUrl(JRGConfiguration config)
     {
         return "https://" + config.getDomain() + "/"
                 + (!channel.equalsIgnoreCase("live") ? "channel/" +

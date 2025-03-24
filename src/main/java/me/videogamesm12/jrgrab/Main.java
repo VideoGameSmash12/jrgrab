@@ -83,6 +83,8 @@ public class Main
             case JSON -> new JsonDestination(configuration);
             case SPREADSHEET -> new SpreadsheetDestination(configuration);
             case URL_LIST -> new UrlListDestination(configuration);
+            case DOWNLOAD -> new DownloadDestination(configuration);
+            case OPTIMIZED_DOWNLOAD -> new OptimizedDownloadDestination(configuration);
         };
 
         grabber.setup();
