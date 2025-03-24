@@ -4,6 +4,7 @@ import me.videogamesm12.jrgrab.Main;
 import me.videogamesm12.jrgrab.data.JRGConfiguration;
 import me.videogamesm12.jrgrab.data.RBXVersion;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,17 +20,19 @@ public class SpreadsheetDestination extends AbstractDestination
     @Override
     public void sendVersions(List<RBXVersion> versions, String channel)
     {
-        try
+        Main.getLogger().info("Writing spreadsheet");
+
+        try (final BufferedWriter writer = new BufferedWriter(new FileWriter("version_spreadsheet." + channel +
+                (getConfig().isMac() ? ".mac" + (getConfig().isArm64() ? ".arm" : "") : "") + ".csv")))
         {
-            Main.getLogger().info("Writing DeployHistory-formatted file");
-            final FileWriter writer = new FileWriter(new File("version_spreadsheet." + channel +
-                    (getConfig().isMac() ? ".mac" + (getConfig().isArm64() ? ".arm" : "") : "") + ".txt"));
-            writer.write(String.join("\r\n", versions.stream().map(version -> version.getVersionHash() + "," + version.getFileVersion().replaceAll(",( )?", ".") + "," + version.getType().getFriendlyName() + "," + "=EPOCHTODATE(" + (version.getDeployDate() / 1000) + ")").toList()));
-            writer.close();
+            writer.write(String.join(System.lineSeparator(), versions.stream().map(version ->
+                    version.getVersionHash() + "," + version.getFileVersion().replaceAll(",( )?", ".") + ","
+                            + version.getType().getFriendlyName() + "," + "=EPOCHTODATE("
+                            + (version.getDeployDate() / 1000) + ")").toList()));
         }
         catch (IOException ex)
         {
-            Main.getLogger().error("Failed to write DeployHistory-formatted file", ex);
+            Main.getLogger().error("Failed to write spreadsheet", ex);
         }
     }
 }

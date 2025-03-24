@@ -30,12 +30,7 @@ public class ClientSettingsGrabber extends AbstractGrabber
         super(config, true);
     }
 
-    @Override
-    public void setup()
-    {
-    }
-
-    @Override
+	@Override
     public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         return Arrays.stream(RBXVersion.VersionType.values()).filter(type -> getConfig().isMac() == type.isMac() && !type.isCjv()).map(type ->

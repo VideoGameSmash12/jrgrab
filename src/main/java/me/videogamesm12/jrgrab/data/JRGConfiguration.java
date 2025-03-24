@@ -3,7 +3,6 @@ package me.videogamesm12.jrgrab.data;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

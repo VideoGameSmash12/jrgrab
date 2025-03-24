@@ -29,7 +29,8 @@ public class JsonDestination extends AbstractDestination
         try (FileWriter writer = new FileWriter("versions." + channel + (getConfig().isMac() ? ".mac"
                 + (getConfig().isArm64() ? ".arm64" : "") : "") + (getConfig().isCjv() ? ".cjv" : "") + ".json"))
         {
-            gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).toList(), writer);
+            gson.toJson(versions.stream().filter(version -> getConfig().isIncludingUnavailable()
+                    || version.getAvailable()).toList(), writer);
         }
         catch (IOException ex)
         {

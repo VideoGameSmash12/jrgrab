@@ -36,7 +36,7 @@ public class UrlListDestination extends AbstractDestination
                     + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
                     + (version.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
                     + (version.isCjv() ? "cjv/" : "") + version.getVersionHash() + "-" + file)));
-            writer.write(String.join("\r\n", files));
+            writer.write(String.join(System.lineSeparator(), files));
         }
         catch (IOException e)
         {

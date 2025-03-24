@@ -23,12 +23,9 @@ public class LegacyGrabber extends AbstractGrabber
     public LegacyGrabber(JRGConfiguration config)
     {
         super(config, true);
-    }
 
-    @Override
-    public void setup()
-    {
-        Main.getLogger().warn("The legacy endpoint is deprecated and has not been updated since August 2023. Future channels don't even have it, so keep that in mind.");
+        Main.getLogger().warn("The legacy endpoint is deprecated and has not been updated since August 2023. Future "
+                + "channels don't even have it, so keep that in mind.");
     }
 
     @Override

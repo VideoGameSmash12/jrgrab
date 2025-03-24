@@ -14,7 +14,15 @@ public abstract class AbstractGrabber
     private final JRGConfiguration config;
     private final boolean parallelSupported;
 
-    public abstract void setup();
+    public void setup()
+    {
+    }
 
+    /**
+     * Fetch the versions and return them in a list.
+     * @param channel   The channel name
+     * @param blacklist A list of already known version hashes
+     * @return          A list of RBXVersion hashes.
+     */
     public abstract List<RBXVersion> getVersions(String channel, List<String> blacklist);
 }

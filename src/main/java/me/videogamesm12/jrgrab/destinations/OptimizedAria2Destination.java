@@ -15,9 +15,20 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <h1>OptimizedAria2Destination</h1>
+ * <p>A modified variant of {@link Aria2Destination} which avoids re-downloading the same files again and again, but at
+ * the cost of being significantly more stringent with its requirements.</p>
+ * <p>{@link Aria2Destination} works by sending all files we know of to the Aria2 daemon without regard for if the files
+ * are different or not. This has the benefit of being a lot looser on what can and can't be done with it, but on the
+ * other hand is extremely inefficient when you need to download lots of versions in bulk.</p>
+ * <p>OptimizedAria2Destination takes a significantly different approach. It maintains a sort of "database" where it
+ * keeps track of each version's files by using their MD5 hash as reference for if a file has changed between the two
+ * versions, then only sends the "new" files to the database.</p>
+ * <p>This is apparently how Roblox handles version updates as well, so it works out!</p>
+ */
 public class OptimizedAria2Destination extends Aria2Destination
 {
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final Map<String, JsonObject> fileMap = new HashMap<>();
     private final List<String> knownFileHashes = new ArrayList<>();
 
@@ -56,7 +67,7 @@ public class OptimizedAria2Destination extends Aria2Destination
             {
                 try
                 {
-                    final JsonObject map = gson.fromJson(new FileReader(file), JsonObject.class);
+                    final JsonObject map = getGson().fromJson(new FileReader(file), JsonObject.class);
                     Main.getLogger().info(file.getName());
                     final Matcher channelMatcher = filePattern.matcher(file.getName());
                     if (channelMatcher.find())
@@ -127,7 +138,7 @@ public class OptimizedAria2Destination extends Aria2Destination
                     try
                     {
                         HttpUtil.post("http://" + getConfig().getAria2().getIpAddress() + ":" + getConfig().getAria2().getPort() + "/jsonrpc",
-                                gson.toJson(createAria2Request("https://" + getConfig().getDomain() + "/"
+                                getGson().toJson(createAria2Request("https://" + getConfig().getDomain() + "/"
                                         + (client.getChannel().equalsIgnoreCase("live") ? "" : "channel/"
                                         + (getConfig().getCommonChannels().contains(channel) ? "common" : channel) + "/")
                                         + (client.getType().isMac() ? "mac/" + (getConfig().isArm64() ? "arm64/" : "") : "")
@@ -152,7 +163,7 @@ public class OptimizedAria2Destination extends Aria2Destination
         {
             Main.getLogger().info("Writing version file map to disk");
             FileWriter writer = new FileWriter("files." + channel + (getConfig().isCjv() ? ".cjv" : "") + ".json");
-            gson.toJson(map, writer);
+            getGson().toJson(map, writer);
             writer.close();
         }
         catch (IOException ex)

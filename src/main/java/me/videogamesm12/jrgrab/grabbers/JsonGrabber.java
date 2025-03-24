@@ -26,12 +26,7 @@ public class JsonGrabber extends AbstractGrabber
         super(config, true);
     }
 
-    @Override
-    public void setup()
-    {
-    }
-
-    @Override
+	@Override
     public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         final File file = new File("versions." + channel + (getConfig().isMac() ? ".mac" + (getConfig().isArm64() ? ".arm64" : "") : "") + ".json");

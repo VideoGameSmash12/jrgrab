@@ -32,7 +32,7 @@ public class FileListDestination extends AbstractDestination
         {
             List<String> files = new ArrayList<>();
             versions.forEach(version -> version.getFiles().keySet().forEach(file -> files.add(version.getVersionHash() + "-" + file)));
-            writer.write(String.join("\r\n", files));
+            writer.write(String.join(System.lineSeparator(), files));
         }
         catch (IOException e)
         {

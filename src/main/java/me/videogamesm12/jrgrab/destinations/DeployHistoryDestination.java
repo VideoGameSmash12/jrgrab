@@ -28,7 +28,7 @@ public class DeployHistoryDestination extends AbstractDestination
         {
             Main.getLogger().info("Writing DeployHistory-formatted file");
             final FileWriter writer = new FileWriter(new File(folder, "DeployHistory.txt"));
-            writer.write(String.join("\r\n", versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).map(RBXVersion::toString).toList()));
+            writer.write(String.join(System.lineSeparator(), versions.stream().filter(version -> getConfig().isIncludingUnavailable() || version.getAvailable()).map(RBXVersion::toString).toList()));
             writer.close();
         }
         catch (IOException ex)

@@ -24,12 +24,7 @@ public class DeployGrabber extends AbstractGrabber
         super(config, true);
     }
 
-    @Override
-    public void setup()
-    {
-    }
-
-    @Override
+	@Override
     public List<RBXVersion> getVersions(String channel, List<String> known)
     {
         try

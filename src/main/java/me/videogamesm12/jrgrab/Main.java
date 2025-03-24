@@ -34,12 +34,16 @@ public class Main
                   |__/    |___/""");
         System.out.println("__--======================--__");
 
+        // Read the command line parameters and create a JRG configuration out of it
         JRGConfiguration configuration = JRGConfiguration.fromArguments(args);
+
+        // If it's null, then it failed
         if (configuration == null)
         {
             return;
         }
 
+        // Load the list of known clients to ignore if we are set to work incrementally
         final Map<String, List<String>> known = new HashMap<>();
         final File knownFile = new File("known.json");
         if (configuration.isIncremental() && knownFile.exists())
@@ -68,6 +72,7 @@ public class Main
             case MATT_GITHUB_TRACKER -> new MattGitHubTrackerGrabber(configuration);
             case SNC_GITHUB_TRACKER -> new SNCGitHubTrackerGrabber(configuration);
         };
+
         getLogger().info("Setting up destination");
         final AbstractDestination destination = switch(configuration.getDestination())
         {

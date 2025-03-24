@@ -53,7 +53,7 @@ public class RBXVersion
         try
         {
             Main.getLogger().info("Verifying availability for version {}", getVersionHash());
-            available = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
+            available = HttpUtil.head("https://" + configuration.getDomain() + "/"
                     + (!channel.equalsIgnoreCase("live") ? "channel/" +
                     (configuration.getCommonChannels().contains(channel) ? "common" : channel) + "/" : "")
                     + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
@@ -68,7 +68,7 @@ public class RBXVersion
                     Main.getLogger().info("Version {} returned 403 through traditional means, trying again but with the common channel", getVersionHash());
                     try
                     {
-                        available = HttpUtil.getFull("https://" + configuration.getDomain() + "/"
+                        available = HttpUtil.head("https://" + configuration.getDomain() + "/"
                                 + "channel/common/"
                                 + (type.isMac() ? "mac/" : "") + (isCjv() ? "cjv/" : "")
                                 + getVersionHash() + "-" + (type.isMac() ?

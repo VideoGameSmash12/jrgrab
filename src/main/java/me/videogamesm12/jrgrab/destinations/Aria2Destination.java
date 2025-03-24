@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import me.videogamesm12.jrgrab.Main;
 import me.videogamesm12.jrgrab.data.JRGConfiguration;
 import me.videogamesm12.jrgrab.data.RBXVersion;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
+@Getter
 public class Aria2Destination extends AbstractDestination
 {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
