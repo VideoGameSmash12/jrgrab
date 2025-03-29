@@ -1,6 +1,7 @@
 package me.videogamesm12.jrgrab.data;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import me.videogamesm12.jrgrab.Main;
@@ -17,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Builder
-@Getter
+@Data
 public class RBXVersion
 {
     private static final Pattern versionPattern = Pattern.compile("^New (WindowsPlayer|MFCStudio|Studio|Studio64|Client) ([a-z0-9-]*) ?at ([0-9]{1,2}/[0-9]{1,2}/[0-9]{3,4} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM))(, file vers?ion: ([0-9]+, ?[0-9]+, ?[0-9]+, ?[0-9]+))?(, git hash: ([A-z0-9]+ ))?...(Done!)?");
